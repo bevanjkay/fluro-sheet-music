@@ -14,8 +14,8 @@ watch(() => song.value, () => {
 </script>
 
 <template>
-    <div style="position: relative;" class="page">
-        <div v-if="status !== 'success'"><h2>Loading song data...</h2><ProgressSpinner /></div>
+    <div style="position: relative;">
+        <div class="page" v-if="status !== 'success'"><h2>Loading song data...</h2><ProgressSpinner /></div>
         <PdfRenderer v-if="songStore.state.planSongs && songStore.state.planSongs.length" />
     </div>
 </template>

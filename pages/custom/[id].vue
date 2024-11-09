@@ -12,7 +12,7 @@ songStore.setPlanSongs(setlist.value.songs);
 </script>
 
 <template>
-    <div style="position: relative;" class="page">
+    <div style="position: relative;">
         <PdfRenderer v-if="songStore.state.planSongs && songStore.state.planSongs.length" />
     </div>
 </template>

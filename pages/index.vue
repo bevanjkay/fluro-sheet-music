@@ -2,7 +2,7 @@
 </script>
 
 <template>
-    <div >
+    <div class="grid row gap-2">
         <h1>Welcome.</h1>
         <Card style="max-width:25em;">
             <template #title>View Services</template>

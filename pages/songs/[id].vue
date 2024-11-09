@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { useStorage } from "@vueuse/core";
 import { useFluroData } from '@/utils/fluro'
 
 const route = useRoute();
@@ -7,14 +6,16 @@ const id = route.params.id;
 const { data: song, status } = useFluroData("song", id);
 
 const songStore = useSongStore();
-songStore.setPlanSongs([song.value]);
+
+watch(() => song.value, () => {
+    songStore.setPlanSongs([song.value]);
+})
+
 </script>
 
 <template>
     <div style="position: relative;">
-        <h3 v-if="status == 'pending'">Fetching Data</h3>
-        <div v-else>
-            <PdfRenderer />
-        </div>
+        <div v-if="status !== 'success'"><h2>Loading song data...</h2><ProgressSpinner /></div>
+        <PdfRenderer v-if="songStore.state.planSongs && songStore.state.planSongs.length" />
     </div>
 </template>

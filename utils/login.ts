@@ -1,17 +1,20 @@
 export const login = async (username: string, password: string) => {
-    console.log("Attempting to login with email", username);
-    const response = await fetch("https://api.fluro.io/token/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            username,
-            password,
-        }),
-    })
-    const data = await response.json()
-    return data
+    try {
+        const response = await fetch("https://api.fluro.io/token/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username,
+                password,
+            }),
+        })
+        const data = await response.json()
+        return data
+    } catch (e) {
+        throw new Error("Error logging in");
+    }
 };
 
 export const refresh = async (refreshToken) => {

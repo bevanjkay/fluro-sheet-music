@@ -1,0 +1,72 @@
+html {
+    font-size: 14px;
+}
+
+body {
+    min-height: 100vh;
+    max-width: 100vw;
+    margin: 0 auto;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1.6;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
+        "Droid Sans", "Helvetica Neue", sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container-sm {
+    width: clamp(200px, 95vw, 600px);
+    margin: auto;
+}
+
+
+.grid {
+    display: grid;
+}
+
+.place-left {
+    justify-items: start;
+}
+
+.column {
+    grid-auto-flow: column;
+}
+
+.row {
+    grid-auto-flow: row;
+}
+
+// Define the function
+@function gap($size) {
+    @return $size;
+  }
+  
+  // Loop to generate the classes
+  @for $i from 1 through 5 {
+    .gap-#{$i} {
+      gap: gap(#{$i}rem);
+    }
+  }
+
+  .start {
+    place-self: start;
+  }
+
+  .end {
+    place-self: end;
+  }
+
+  .pdf {
+    height: calc(100vh - 150px);
+    width: 100%;
+}
+
+canvas {
+  max-height: calc(100vh - 60px);
+  max-width: 100%;
+  width: auto !important;
+}

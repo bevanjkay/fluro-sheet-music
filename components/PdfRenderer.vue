@@ -2,14 +2,16 @@
 import { useStorage } from "@vueuse/core";
 
 const sheetStore = useSheetStore();
-sheetStore.getSheets();
-
 const songStore = useSongStore();
-songStore.getSongs();
+
+const keySelection = useStorage("keys", {});
+const vertical = useStorage("vertical", false);
 
 const createURL = (sheet) => {
     return `https://api.fluro.io/get/${sheet._id}`
 }
+
+const songLoaded = ref({});
 
 const populatedSongs = computed(() => {
     const songs = songStore.state.songs;
@@ -24,6 +26,8 @@ const populatedSongs = computed(() => {
             return;
         }
 
+        songLoaded.value[song._id] = false;
+
         matchedSong.pages = [1];
         const populatedSheets = [];
         matchedSong.data.sheetMusic.forEach(sheet => {
@@ -35,14 +39,22 @@ const populatedSongs = computed(() => {
 
         matchedSong.sheetMusic = populatedSheets;
 
-        matchedSong.selectedSheet = populatedSheets.find((sheet) => sheet.data?.key == song.key);
-        if (!matchedSong.selectedSheet) {
-            matchedSong.selectedSheet = populatedSheets[0];
+        if (keySelection.value[song._id]) {
+            matchedSong.selectedSheet = populatedSheets.find(sheet => sheet._id == keySelection.value[song._id]);
+        } else {
+            matchedSong.selectedSheet = populatedSheets.find(sheet => sheet.data?.key == song.key);
+            
+            if (!matchedSong.selectedSheet) {
+                matchedSong.selectedSheet = populatedSheets[0];
+            }
         }
+
+        keySelection.value[song._id] = matchedSong.selectedSheet._id;
 
         populated.push(matchedSong);
     })
 
+    songStore.setPopulatedSongs(populated);
     return populated;
 })
 
@@ -53,9 +65,10 @@ const handleData = (data) => {
 
 const songPages = ref({});
 
-const vertical = useStorage("vertical", false);
-
 const findPages = (song) => {
+
+    songLoaded.value[song._id] = true;
+
     if (songPages.value[song._id]) {
         let output = [];
         let count = songPages.value[song._id];
@@ -66,30 +79,15 @@ const findPages = (song) => {
     }
     return [1];
 }
-
-const drawer = useStorage("drawer", false);
-drawer.value = false;
-
-const keySelection = useStorage("keys", {});
-
 </script>
 
 <template>
     <div>
-        <Drawer :visible="drawer" header="Options" style="width:30rem;">
-            <div v-for="song in populatedSongs" :key="song._id" style="margin-bottom: 2em;">
-                <label style="clear:both;display:block;" :for="song._id"><strong>{{ song.title }}</strong></label>
-                <Select v-model="keySelection[song._id]" :options="song.sheetMusic" optionLabel="title" optionValue="_id"
-                    placeholder="Select a Key" class="w-full md:w-56" />
-            </div>
-            <label><strong>Scroll Direction</strong></label><br>
-            <SelectButton v-model="vertical" :options="options" optionLabel="name" optionValue="value" />
-        </Drawer>
         <div class="pdf">
-            <Swiper :direction="vertical ? 'vertical' : 'horizontal'">
+            <Swiper autoHeight :direction="vertical ? 'vertical' : 'horizontal'">
                 <template v-for="song in populatedSongs">
                     <SwiperSlide v-for="page in findPages(song)" :key="song._id + page">
-                        <Pdf :page="page" v-if="song.selectedSheet" :source="createURL(song.selectedSheet)"
+                        <Pdf v-if="song.selectedSheet" :page="page" :source="createURL(song.selectedSheet)"
                             :song="song._id" @data="handleData" />
                     </SwiperSlide>
                 </template>
@@ -97,10 +95,3 @@ const keySelection = useStorage("keys", {});
         </div>
     </div>
 </template>
-
-<style lang="scss">
-.pdf {
-    height: calc(100vh - 150px);
-    width: 100%;
-}
-</style>

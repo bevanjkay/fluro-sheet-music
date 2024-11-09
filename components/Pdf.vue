@@ -8,16 +8,16 @@ const props = defineProps({
 })
 
 const emit = defineEmits<{
-(e: 'data', value: any): void
+    (e: 'data', value: any): void
 }>();
 
 const handleLoaded = ({ numPages }) => {
     emit('data', { id: props.song, numPages })
 }
-
 </script>
 
 <template>
-    <!-- <pre>{{ props }}</pre> -->
-    <VuePdfEmbed :source="props.source" :page="props.page" @loaded="handleLoaded"/>
+    <div>
+        <VuePdfEmbed :source="props.source" :page="props.page" @loaded="handleLoaded" />
+    </div>
 </template>

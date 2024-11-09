@@ -62,7 +62,7 @@ export default defineNuxtConfig({
   ssr: false,
   modules: ['nuxt-swiper', '@primevue/nuxt-module', '@pinia/nuxt'],
   css: [
-    "@/assets/main.css",
+    "@/assets/main.scss",
     "primeicons/primeicons.css",
   ],
   app: {

@@ -22,17 +22,11 @@ watch(() => plan.value, () => {
     const planSongs = plan.value.schedules.filter((schedule) => schedule.type == "song");
     songStore.setPlanSongs(planSongs);
 })
-
-const keySelection = useStorage(`${id}-keys`, {});
-const vertical = useStorage("vertical", false);
-const options = [
-    { name: "Vertical", value: true },
-    { name: "Horizontal", value: false }
-]
 </script>
 
 <template>
     <div>
+        <div v-if="status !== 'success'"><h2>Loading plan...</h2><ProgressSpinner /></div>
         <PdfRenderer />
     </div>
 </template>

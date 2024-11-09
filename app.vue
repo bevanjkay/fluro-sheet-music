@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { getUserSession, refresh } from "./utils/login";
 import { useStorage } from "@vueuse/core";
+import Dialog from "@/components/Dialog.vue";
 
 const user = useStorage("_fluro_user", {});
 const session = ref(null);
+const loading = ref(true);
 
 onBeforeMount(async () => {
   console.log("User", user.value)
@@ -17,11 +19,22 @@ onBeforeMount(async () => {
       const response = await refresh(user.value.refreshToken);
       user.value.token = response.token;
     } catch (e) {
-      console.error(error);
-      console.error(e);
       user.value = {};
     }
   }
+})
+
+const songStore = useSongStore();
+const sheetStore = useSheetStore();
+
+onMounted(async () => {
+
+  if (user.value) {
+    await songStore.getSongs();
+    await sheetStore.getSheets();
+  }
+
+  loading.value = false;
 })
 
 
@@ -57,28 +70,44 @@ const items = ref([
     },
   },
   {
+    label: "Custom Setlists",
+    icon: "pi pi-fw pi-th-large",
+    command: () => {
+      navigateTo("/custom");
+    },
+  },
+  {
     label: "Settings",
     icon: "pi pi-fw pi-cog",
     command: () => {
-      drawer.value = true;
+      dialog.open(Dialog, {})
     },
   }
 ]);
 
-const drawer = useStorage("drawer", false);
+const dialog = useDialog();
 
+const logout = () => {
+  user.value = {};
+  navigateTo("/login");
+}
 </script>
 
 <template>
   <div>
+    <DynamicDialog />
     <Menubar :model="items">
       <template #end>
         <div class="flex">
-          <Button @click="user = {}">Logout</Button>
+          <Button @click="logout">Logout</Button>
         </div>
       </template>
     </Menubar>
-    <NuxtPage style="padding:25px;" />
+    <div v-if="loading" style="padding:25px;">
+      <h2>Loading data...</h2>
+      <ProgressSpinner />
+    </div>
+    <NuxtPage v-if="!loading" style="padding:25px; background: #f7f9fb;" />
   </div>
 </template>
 

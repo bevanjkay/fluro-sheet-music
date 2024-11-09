@@ -4,10 +4,10 @@ export const useSongStore = defineStore('songStore', () => {
   const state = reactive({
     songs: [],
     planSongs: [],
+    populatedSongs: []
   });
 
   async function getSongs() {
-    console.log("Fetching songs");
     try {
       if (state.songs.length > 0) return;
       const { data } = await useAsyncFluroData("song", null, { sort: "title" });
@@ -25,5 +25,9 @@ export const useSongStore = defineStore('songStore', () => {
     state.planSongs = songs;
   }
 
-  return { state, getSongs, getSong, setPlanSongs }
+  function setPopulatedSongs(songs) {
+    state.populatedSongs = songs;
+  }
+
+  return { state, getSongs, getSong, setPlanSongs, setPopulatedSongs }
 })

@@ -10,7 +10,7 @@ const filteredSongs = computed(() => {
 </script>
 
 <template>
-    <div>
+    <div class="page">
         <FloatLabel variant="in" style="margin-bottom: 2rem;">
             <InputText id="in_label" v-model="query" variant="filled" />
             <label for="in_label">Search Songs</label>

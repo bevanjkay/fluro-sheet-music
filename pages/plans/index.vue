@@ -4,7 +4,7 @@ serviceStore.getServices();
 </script>
 
 <template>
-    <div>
+    <div class="page">
         <template v-if="serviceStore.state.services.length">
             <h1>Upcoming Services</h1>
             <Card v-for="service in serviceStore.state.services" :key="service._id" style="width:25em; overflow: hidden; margin-bottom: 2em;">

@@ -28,7 +28,7 @@ const useLogin = async () => {
 </script>
 
 <template>
-    <div>
+    <div class="page">
         <Card style="max-width: 60ch">
             <template #title>
                 <h1 style="margin: 0;">Login</h1>

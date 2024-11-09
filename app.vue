@@ -107,7 +107,7 @@ const logout = () => {
       <h2>Loading data...</h2>
       <ProgressSpinner />
     </div>
-    <NuxtPage v-if="!loading" style="padding:25px; background: #f7f9fb;" />
+    <NuxtPage v-if="!loading" style="background: #f7f9fb;" />
   </div>
 </template>
 

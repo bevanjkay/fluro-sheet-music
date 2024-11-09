@@ -25,7 +25,7 @@ watch(() => plan.value, () => {
 </script>
 
 <template>
-    <div>
+    <div class="page">
         <div v-if="status !== 'success'"><h2>Loading plan...</h2><ProgressSpinner /></div>
         <PdfRenderer />
     </div>

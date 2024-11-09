@@ -17,7 +17,5 @@ const handleLoaded = ({ numPages }) => {
 </script>
 
 <template>
-    <div>
-        <VuePdfEmbed :source="props.source" :page="props.page" @loaded="handleLoaded" />
-    </div>
+    <VuePdfEmbed :source="props.source" :page="props.page" @loaded="handleLoaded" />
 </template>

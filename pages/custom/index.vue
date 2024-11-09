@@ -79,7 +79,7 @@ const deleteSetlist = (setlist) => {
 </script>
 
 <template>
-    <div>
+    <div class="page">
         <h1>Custom Setlist</h1>
         <Message severity="warning" style="margin-bottom: 1em;">
             <strong>Note:</strong> Setlists are only stored in your browser. They will be lost if you clear your cache.

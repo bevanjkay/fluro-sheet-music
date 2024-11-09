@@ -73,8 +73,11 @@ const editSetlist = (setlist) => {
     setlistForm.value = setlist;
 }
 
+const deleting = ref(false);
+
 const deleteSetlist = (setlist) => {
     setlists.value = setlists.value.filter(s => s._id !== setlist._id);
+    deleting.value = false;
 }
 </script>
 
@@ -129,7 +132,10 @@ const deleteSetlist = (setlist) => {
                     <h3 style="margin:0;">{{ setlist.title }}</h3>
                 </template>
                 <template #content>
-                    <p v-if="setlist.songs.length">{{ setlist.songs.map(s => s.title).join("<br>") }}</p>
+                    <strong>Date created:</strong> {{ formatDate(setlist.created) }}
+                    <p v-if="setlist.songs.length">
+                        <span style="display: block;" :key="item._id" v-for="item in setlist.songs">{{  item.title }}</span>
+                    </p>
                 </template>
                 <template #footer>
                     <div class="grid column">
@@ -138,7 +144,9 @@ const deleteSetlist = (setlist) => {
                             <Button @click="editSetlist(setlist)" label="Edit Setlist" />
                         </div>
                         <div class="end">
-                            <Button @click="deleteSetlist(setlist)" class="p-button-danger">Delete</Button>
+                            <Button v-if="!deleting" severity="secondary" @click="deleting = true" class="p-button-danger">Delete</Button>
+                            <Button style="margin-right: 1em;" v-if="deleting" @click="deleteSetlist(setlist)" class="p-button-danger">Yes, I'm sure</Button>
+                            <Button v-if="deleting" severity="secondary" @click="deleting = false" class="p-button-grey">No, don't delete this</Button>
                         </div>
                     </div>
                 </template>

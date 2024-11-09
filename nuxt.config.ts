@@ -52,9 +52,15 @@ const customPreset = definePreset(Aura, {
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true
+    }
+  },
   ssr: false,
-  modules: ['nuxt-swiper', '@primevue/nuxt-module'],
+  modules: ['nuxt-swiper', '@primevue/nuxt-module', '@pinia/nuxt'],
   css: [
     "@/assets/main.css",
     "primeicons/primeicons.css",

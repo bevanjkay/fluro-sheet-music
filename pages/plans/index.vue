@@ -1,19 +1,12 @@
 <script lang="ts" setup>
-import { useFluroData } from '@/utils/fluro'
-
-interface Plan {
-    _id: string
-}
-
-const { data: services, status } = await useFluroData("service", null, { status: "active", sort: "startDate", allDefinitions: true });
-// const { data: plans, status } = await useFluroData("plan");
-
+const serviceStore = useServiceStore();
+serviceStore.getServices();
 </script>
 
 <template>
     <div>
         <h3 v-if="status == 'pending'">Fetching Data</h3>
-        <div v-for="service in services" :key="service._id">
+        <div v-for="service in serviceStore.state.services" :key="service._id">
             <!-- <pre>{{ service }}</pre> -->
             <Card style="width:25em; overflow: hidden; margin-bottom: 2em;">
                 <template #header>

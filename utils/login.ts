@@ -26,6 +26,7 @@ export const refresh = async (refreshToken) => {
         }),
     })
     const data = await response.json()
+    console.log(data);
     return data
 }
 

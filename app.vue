@@ -10,6 +10,7 @@ onBeforeMount(async () => {
   if (!user.value) return;
   try {
     const response = await getUserSession(user.value);
+    console.log(response);
   } catch (error) {
     try {
       console.log("Refreshing token", user.value.refreshToken);
@@ -18,9 +19,11 @@ onBeforeMount(async () => {
     } catch (e) {
       console.error(error);
       console.error(e);
+      user.value = {};
     }
   }
 })
+
 
 const expiry = computed(() => {
   if (!session.value) return null;
@@ -37,28 +40,28 @@ const items = ref([
     icon: "pi pi-fw pi-home",
     command: () => {
       navigateTo("/");
-      },
     },
+  },
   {
     label: "Service Plans",
     icon: "pi pi-fw pi-calendar",
     command: () => {
       navigateTo("/plans");
-      },
+    },
   },
   {
     label: "Songs",
     icon: "pi pi-fw pi-list",
     command: () => {
       navigateTo("/songs");
-      },
+    },
   },
   {
     label: "Settings",
     icon: "pi pi-fw pi-cog",
     command: () => {
       drawer.value = true;
-      },
+    },
   }
 ]);
 
@@ -74,7 +77,7 @@ const drawer = useStorage("drawer", false);
           <Button @click="user = {}">Logout</Button>
         </div>
       </template>
-      </Menubar>
+    </Menubar>
     <NuxtPage style="padding:25px;" />
   </div>
 </template>
@@ -89,5 +92,4 @@ const drawer = useStorage("drawer", false);
   align-items: center;
   gap: 1rem;
 }
-
 </style>

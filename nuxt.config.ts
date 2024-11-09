@@ -65,9 +65,6 @@ export default defineNuxtConfig({
     "@/assets/main.scss",
     "primeicons/primeicons.css",
   ],
-  app: {
-    baseURL: "/fluro-sheet-music/"
-  },
   primevue: {
     options: {
       theme: {

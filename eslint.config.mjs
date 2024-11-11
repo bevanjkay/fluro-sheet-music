@@ -1,15 +1,12 @@
 // @ts-check
-import withNuxt from './.nuxt/eslint.config.mjs'
+import withNuxt from "./.nuxt/eslint.config.mjs";
 
-export default withNuxt({
-  rules: {
-    'vue/max-attributes-per-line': ['error', {
-      singleline: {
-        max: 3,
-      },
-      multiline: {
-        max: 1,
-      },
-    }],
-  },
-})
+export default withNuxt()
+  .prepend({
+    rules: {
+    //   '@stylistic/semi': ['error', 'always'],
+    //   '@stylistic/quotes': ['error', 'double'],
+      semi: ["error", "always"],
+      quotes: ["error", "double"],
+    },
+  });

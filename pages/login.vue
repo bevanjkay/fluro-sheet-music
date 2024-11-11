@@ -1,37 +1,38 @@
 <script setup lang="ts">
-import { useStorage, type RemovableRef } from '@vueuse/core'
-import { login } from '@/utils/login'
+import { useStorage, type RemovableRef } from "@vueuse/core";
+import { login } from "@/utils/login";
 
-const user: RemovableRef<User> = useStorage('_fluro_user', { token: '', refreshToken: '' })
-const username: Ref<string> = ref<string>('')
-const password: Ref<string> = ref<string>('')
-const error: Ref<string> = ref('')
-const pending: Ref<boolean> = ref(false)
+const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
+const username: Ref<string> = ref<string>("");
+const password: Ref<string> = ref<string>("");
+const error: Ref<string> = ref("");
+const pending: Ref<boolean> = ref(false);
 
 const useLogin = async (): Promise<void> => {
-  pending.value = true
+  pending.value = true;
 
   try {
-    const response = await login(username.value, password.value)
+    const response = await login(username.value, password.value);
     if (response.token) {
-      user.value = response
-      reloadNuxtApp()
+      user.value = response;
+      navigateTo("/");
+      reloadNuxtApp();
     }
     else {
-      error.value = response.message
-      pending.value = false
+      error.value = response.message;
+      pending.value = false;
     }
   }
   catch (e: unknown) {
     if (e instanceof Error) {
-      error.value = e.message
+      error.value = e.message;
     }
     else {
-      error.value = String(e)
+      error.value = String(e);
     }
-    pending.value = false
+    pending.value = false;
   }
-}
+};
 </script>
 
 <template>

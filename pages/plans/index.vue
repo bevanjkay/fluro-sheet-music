@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-const serviceStore = useServiceStore()
-serviceStore.getServices()
+const serviceStore = useServiceStore();
+serviceStore.getServices();
 </script>
 
 <template>

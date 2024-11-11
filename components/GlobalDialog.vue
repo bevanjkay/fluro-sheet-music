@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-import { useStorage } from '@vueuse/core'
+import { useStorage } from "@vueuse/core";
 
-const songStore = useSongStore()
+const songStore = useSongStore();
 
-const vertical: Ref<boolean> = useStorage('vertical', false)
+const vertical: Ref<boolean> = useStorage("vertical", false);
 
 const verticalOptions = [
-  { name: 'Vertical', value: true },
-  { name: 'Horizontal', value: false },
-]
+  { name: "Vertical", value: true },
+  { name: "Horizontal", value: false },
+];
 
-const keySelection: Ref<Record<string, string>> = useStorage('keys', {})
+const keySelection: Ref<Record<string, string>> = useStorage("keys", {});
 </script>
 
 <template>

@@ -1,18 +1,18 @@
 <script lang="ts" setup>
-import { useStorage } from '@vueuse/core'
+import { useStorage } from "@vueuse/core";
 
-const route = useRoute()
-const id = route.params.id
+const route = useRoute();
+const id = route.params.id;
 
-const setlists: Ref<CustomSetlist[]> = useStorage('setlists', [])
-const setlist: ComputedRef<CustomSetlist | undefined> = computed(() => setlists.value.find((s: CustomSetlist) => s._id == id))
+const setlists: Ref<CustomSetlist[]> = useStorage("setlists", []);
+const setlist: ComputedRef<CustomSetlist | undefined> = computed(() => setlists.value.find((s: CustomSetlist) => s._id == id));
 
-const songStore = useSongStore()
+const songStore = useSongStore();
 watch(() => setlist.value, () => {
   if (setlist.value) {
-    songStore.setPlanSongs(setlist.value.songs)
+    songStore.setPlanSongs(setlist.value.songs);
   }
-})
+});
 </script>
 
 <template>

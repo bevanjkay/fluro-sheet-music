@@ -1,84 +1,84 @@
 <script lang="ts" setup>
-import { useStorage } from '@vueuse/core'
+import { useStorage } from "@vueuse/core";
 
-const setlists: Ref<CustomSetlist[]> = useStorage('setlists', [])
+const setlists: Ref<CustomSetlist[]> = useStorage("setlists", []);
 
-const songStore = useSongStore()
+const songStore = useSongStore();
 
-const create = ref(false)
-const edit = ref(false)
+const create = ref(false);
+const edit = ref(false);
 
 const setlistForm: Ref<CustomSetlist> = ref({
-  title: '',
+  title: "",
   songs: [],
   created: null,
-})
+});
 
-const selectedSongs: Ref<PlanSong[]> = ref([])
+const selectedSongs: Ref<PlanSong[]> = ref([]);
 
 const addSongs = () => {
-  setlistForm.value.songs = [...setlistForm.value.songs, ...selectedSongs.value]
-  selectedSongs.value = []
-}
+  setlistForm.value.songs = [...setlistForm.value.songs, ...selectedSongs.value];
+  selectedSongs.value = [];
+};
 
 const removeSong = (id: string) => {
-  console.log(id)
-  setlistForm.value.songs = setlistForm.value.songs.filter((s: PlanSong) => s._id !== id)
-}
+  console.log(id);
+  setlistForm.value.songs = setlistForm.value.songs.filter((s: PlanSong) => s._id !== id);
+};
 
-const selectedKeys: Ref<Record<string, string>> = ref({})
+const selectedKeys: Ref<Record<string, string>> = ref({});
 
-const keys: string[] = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const keys: string[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-const error: Ref<string> = ref('')
+const error: Ref<string> = ref("");
 
 const createSetlist = (): void => {
-  const id = setlistForm.value.title.toLowerCase().replace(/\s/g, '-')
+  const id = setlistForm.value.title.toLowerCase().replace(/\s/g, "-");
 
   if (!setlistForm.value.title) {
-    error.value = 'Please enter a title for your setlist'
-    return
+    error.value = "Please enter a title for your setlist";
+    return;
   }
 
   if (setlists.value.find(s => s._id === id) && !edit.value) {
-    error.value = 'A setlist with that name already exists, please choose a different name'
-    return
+    error.value = "A setlist with that name already exists, please choose a different name";
+    return;
   }
 
   setlistForm.value.songs.forEach((song: PlanSong) => {
-    song.key = selectedKeys.value[song._id]
-  })
+    song.key = selectedKeys.value[song._id];
+  });
 
-  setlistForm.value.created = new Date()
+  setlistForm.value.created = new Date();
 
   if (edit.value) {
-    setlists.value = setlists.value.filter(s => s._id !== id)
+    setlists.value = setlists.value.filter(s => s._id !== id);
   }
 
-  setlists.value = [...setlists.value, { ...setlistForm.value, _id: id }]
+  setlists.value = [...setlists.value, { ...setlistForm.value, _id: id }];
 
   setlistForm.value = {
-    title: '',
+    title: "",
     songs: [],
     created: null,
-  }
+  };
 
-  create.value = false
-  edit.value = false
-}
+  create.value = false;
+  edit.value = false;
+};
 
 const editSetlist = (setlist: CustomSetlist): void => {
-  create.value = true
-  edit.value = true
-  setlistForm.value = setlist
-}
+  create.value = true;
+  edit.value = true;
+  setlistForm.value = setlist;
+};
 
-const deleting = ref(false)
+const deleting = ref(false);
 
 const deleteSetlist = (setlist: CustomSetlist): void => {
-  setlists.value = setlists.value.filter((s: CustomSetlist) => s._id != setlist._id)
-  deleting.value = false
-}
+  setlists.value = setlists.value.filter((s: CustomSetlist) => s._id != setlist._id);
+  deleting.value = false;
+};
 </script>
 
 <template>

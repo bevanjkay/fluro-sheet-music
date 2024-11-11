@@ -1,22 +1,22 @@
-import { useStorage } from '@vueuse/core'
+import { useStorage } from "@vueuse/core";
 
 function isAuthenticated() {
-  const user = useStorage('_fluro_user', { token: null }).value
+  const user = useStorage("_fluro_user", { token: null }).value;
   if (user.token) {
-    return true
+    return true;
   }
-  return false
+  return false;
 }
 
 export default defineNuxtRouteMiddleware((to) => {
-  if (to.path == '/login') {
+  if (to.path == "/login") {
     if (isAuthenticated() === true) {
-      return navigateTo('/')
+      return navigateTo("/");
     }
-    return
+    return;
   }
 
   if (isAuthenticated() === false) {
-    return navigateTo('/login')
+    return navigateTo("/login");
   }
-})
+});

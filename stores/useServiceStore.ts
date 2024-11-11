@@ -1,21 +1,21 @@
-export const useServiceStore = defineStore('serviceStore', () => {
+export const useServiceStore = defineStore("serviceStore", () => {
   const state = reactive({
     services: [] as Service[],
-  })
+  });
 
   async function getServices() {
     try {
-      const { data } = await useAsyncFluroData('service', null, { sort: 'startDate', status: 'active', allDefinitions: true }) as { data: Ref<Service[]> }
-      state.services = data.value
+      const { data } = await useAsyncFluroData("service", null, { sort: "startDate", status: "active", allDefinitions: true }) as { data: Ref<Service[]> };
+      state.services = data.value;
     }
     catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }
 
   function getService(id: string) {
-    return state.services.find((service: Service) => service._id === id)
+    return state.services.find((service: Service) => service._id === id);
   }
 
-  return { state, getServices, getService }
-})
+  return { state, getServices, getService };
+});

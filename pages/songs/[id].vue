@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import { useFluroData } from '@/utils/fluro'
+import { useFluroData } from "@/utils/fluro";
 
-const route = useRoute()
-const id = route.params.id
-const { data: song, status } = useFluroData('song', id)
+const route = useRoute();
+const id = route.params.id;
+const { data: song, status } = useFluroData("song", id);
 
-const songStore = useSongStore()
+const songStore = useSongStore();
 
 watch(() => song.value, () => {
-  songStore.setPlanSongs([song.value as PlanSong])
-})
+  songStore.setPlanSongs([song.value as PlanSong]);
+});
 </script>
 
 <template>

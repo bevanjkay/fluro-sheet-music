@@ -1,88 +1,88 @@
 <script lang="ts" setup>
-import { useStorage } from '@vueuse/core'
+import { useStorage } from "@vueuse/core";
 
-const sheetStore = useSheetStore()
-const songStore = useSongStore()
+const sheetStore = useSheetStore();
+const songStore = useSongStore();
 
-const keySelection: Ref<Record<string, string | undefined>> = useStorage('keys', {})
-const vertical: Ref<boolean> = useStorage('vertical', false)
+const keySelection: Ref<Record<string, string | undefined>> = useStorage("keys", {});
+const vertical: Ref<boolean> = useStorage("vertical", false);
 
 const createURL = (sheet: Sheet) => {
-  return `https://api.fluro.io/get/${sheet._id}`
-}
+  return `https://api.fluro.io/get/${sheet._id}`;
+};
 
-const songLoaded: Ref<Record<string, boolean>> = ref({})
+const songLoaded: Ref<Record<string, boolean>> = ref({});
 
 const populatedSongs = computed(() => {
-  const songs = songStore.state.songs
-  const sheets = sheetStore.state.sheets
-  const planSongs = songStore.state.planSongs
+  const songs = songStore.state.songs;
+  const sheets = sheetStore.state.sheets;
+  const planSongs = songStore.state.planSongs;
 
-  const populated: PopulatedSong[] = []
+  const populated: PopulatedSong[] = [];
 
   planSongs.forEach((song: PlanSong) => {
-    const matchedSong: PopulatedSong | undefined = songs.find((s: Song) => s._id == song._id)
+    const matchedSong: PopulatedSong | undefined = songs.find((s: Song) => s._id == song._id);
     if (!matchedSong) {
-      return
+      return;
     }
 
-    songLoaded.value[song._id] = false
+    songLoaded.value[song._id] = false;
 
-    matchedSong.pages = [1]
-    const populatedSheets: Sheet[] = []
+    matchedSong.pages = [1];
+    const populatedSheets: Sheet[] = [];
     matchedSong.data.sheetMusic.forEach((sheet) => {
-      const matchedSheet = sheets.find((s: Sheet) => s._id == sheet._id)
+      const matchedSheet = sheets.find((s: Sheet) => s._id == sheet._id);
       if (matchedSheet) {
-        populatedSheets.push(matchedSheet)
+        populatedSheets.push(matchedSheet);
       }
-    })
+    });
 
-    matchedSong.sheetMusic = populatedSheets
+    matchedSong.sheetMusic = populatedSheets;
 
     if (keySelection.value[song._id]) {
-      matchedSong.selectedSheet = populatedSheets.find((sheet: Sheet) => sheet._id == keySelection.value[song._id])
+      matchedSong.selectedSheet = populatedSheets.find((sheet: Sheet) => sheet._id == keySelection.value[song._id]);
     }
     else {
-      matchedSong.selectedSheet = populatedSheets.find((sheet: Sheet) => sheet.data?.key == song.key)
+      matchedSong.selectedSheet = populatedSheets.find((sheet: Sheet) => sheet.data?.key == song.key);
 
       if (!matchedSong.selectedSheet) {
-        matchedSong.selectedSheet = populatedSheets[0]
+        matchedSong.selectedSheet = populatedSheets[0];
       }
     }
 
-    keySelection.value[song._id] = matchedSong.selectedSheet?._id
+    keySelection.value[song._id] = matchedSong.selectedSheet?._id;
 
-    populated.push(matchedSong)
-  })
+    populated.push(matchedSong);
+  });
 
-  songStore.setPopulatedSongs(populated)
-  return populated
-})
+  songStore.setPopulatedSongs(populated);
+  return populated;
+});
 
 const handleData = (data: { id: string, numPages: number }) => {
-  const { id, numPages } = data
-  songPages.value[id] = numPages
-}
+  const { id, numPages } = data;
+  songPages.value[id] = numPages;
+};
 
-const songPages: Ref<Record<string, number>> = ref({})
+const songPages: Ref<Record<string, number>> = ref({});
 
 const findPages = (song: PopulatedSong) => {
-  songLoaded.value[song._id] = true
+  songLoaded.value[song._id] = true;
 
   if (songPages.value[song._id]) {
-    const output = []
-    const count = songPages.value[song._id]
+    const output = [];
+    const count = songPages.value[song._id];
     for (let i = 1; i <= count; i++) {
-      output.push(i)
+      output.push(i);
     }
-    return output
+    return output;
   }
-  return [1]
-}
+  return [1];
+};
 
 onBeforeUnmount(() => {
-  songStore.setPopulatedSongs([])
-})
+  songStore.setPopulatedSongs([]);
+});
 </script>
 
 <template>

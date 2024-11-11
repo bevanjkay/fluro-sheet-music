@@ -1,91 +1,91 @@
 <script lang="ts" setup>
-import { useStorage } from '@vueuse/core'
-import { getUserSession, refresh } from './utils/login'
-import GlobalDialog from '@/components/GlobalDialog.vue'
+import { useStorage } from "@vueuse/core";
+import { getUserSession, refresh } from "./utils/login";
+import GlobalDialog from "@/components/GlobalDialog.vue";
 
-const user: Ref<User> = useStorage('_fluro_user', { token: '', refreshToken: '' })
-const loading: Ref<boolean> = ref(true)
+const user: Ref<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
+const loading: Ref<boolean> = ref(true);
 
 onBeforeMount(async () => {
-  if (!user.value) return
+  if (!user.value) return;
   try {
-    const response = await getUserSession(user.value)
-    console.log(response)
+    const response = await getUserSession(user.value);
+    console.log(response);
   }
   catch {
     try {
-      console.log('Refreshing token', user.value.refreshToken)
-      const response = await refresh(user.value.refreshToken)
-      user.value.token = response.token
+      console.log("Refreshing token", user.value.refreshToken);
+      const response = await refresh(user.value.refreshToken);
+      user.value.token = response.token;
     }
     catch {
       user.value = {
-        token: '',
-        refreshToken: '',
-      }
+        token: "",
+        refreshToken: "",
+      };
     }
   }
-})
+});
 
-const songStore = useSongStore()
-const sheetStore = useSheetStore()
+const songStore = useSongStore();
+const sheetStore = useSheetStore();
 
 onMounted(async () => {
   if (user.value) {
-    await songStore.getSongs()
-    await sheetStore.getSheets()
+    await songStore.getSongs();
+    await sheetStore.getSheets();
   }
 
-  loading.value = false
-})
+  loading.value = false;
+});
 
 const items = ref([
   {
-    label: 'Home',
-    icon: 'pi pi-fw pi-home',
+    label: "Home",
+    icon: "pi pi-fw pi-home",
     command: () => {
-      navigateTo('/')
+      navigateTo("/");
     },
   },
   {
-    label: 'Service Plans',
-    icon: 'pi pi-fw pi-calendar',
+    label: "Service Plans",
+    icon: "pi pi-fw pi-calendar",
     command: () => {
-      navigateTo('/plans')
+      navigateTo("/plans");
     },
   },
   {
-    label: 'Songs',
-    icon: 'pi pi-fw pi-list',
+    label: "Songs",
+    icon: "pi pi-fw pi-list",
     command: () => {
-      navigateTo('/songs')
+      navigateTo("/songs");
     },
   },
   {
-    label: 'Custom Setlists',
-    icon: 'pi pi-fw pi-th-large',
+    label: "Custom Setlists",
+    icon: "pi pi-fw pi-th-large",
     command: () => {
-      navigateTo('/custom')
+      navigateTo("/custom");
     },
   },
   {
-    label: 'Settings',
-    icon: 'pi pi-fw pi-cog',
+    label: "Settings",
+    icon: "pi pi-fw pi-cog",
     command: () => {
-      dialog.open(GlobalDialog, {})
+      dialog.open(GlobalDialog, {});
     },
   },
-])
+]);
 
-const dialog = useDialog()
+const dialog = useDialog();
 
 const logout = () => {
   user.value = {
-    token: '',
-    refreshToken: '',
-  }
-  navigateTo('/login')
-}
+    token: "",
+    refreshToken: "",
+  };
+  navigateTo("/login");
+};
 </script>
 
 <template>

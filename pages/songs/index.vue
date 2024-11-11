@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-const songStore = useSongStore()
+const songStore = useSongStore();
 
-const query = ref('')
+const query = ref("");
 
 const filteredSongs = computed(() => {
-  if (!query.value) return songStore.state.songs
-  return songStore.state.songs.filter(song => song.title.toLowerCase().includes(query.value.toLowerCase()))
-})
+  if (!query.value) return songStore.state.songs;
+  return songStore.state.songs.filter(song => song.title.toLowerCase().includes(query.value.toLowerCase()));
+});
 </script>
 
 <template>

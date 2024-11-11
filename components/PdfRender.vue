@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { defineProps, defineEmits } from 'vue'
-import VuePdfEmbed from 'vue-pdf-embed'
+import { defineProps, defineEmits } from "vue";
+import VuePdfEmbed from "vue-pdf-embed";
 
 const props = defineProps({
   source: {
     type: String,
-    default: '',
+    default: "",
   },
   page: {
     type: Number,
@@ -13,17 +13,17 @@ const props = defineProps({
   },
   song: {
     type: String,
-    default: '',
+    default: "",
   },
-})
+});
 
 const emit = defineEmits<{
-  (e: 'data', value: { id: string, numPages: number }): void
-}>()
+  (e: "data", value: { id: string, numPages: number }): void
+}>();
 
 const handleLoaded = ({ numPages }: { numPages: number }): void => {
-  emit('data', { id: props.song, numPages })
-}
+  emit("data", { id: props.song, numPages });
+};
 </script>
 
 <template>

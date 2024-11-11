@@ -6,6 +6,11 @@ import GlobalDialog from "@/components/GlobalDialog.vue";
 const user: Ref<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 const loading: Ref<boolean> = ref(true);
 
+useSeoMeta({
+  title: "Fluro Sheet Music Viewer",
+  ogTitle: "Fluro Sheet Music Viewer",
+});
+
 onBeforeMount(async () => {
   if (!user.value) return;
   try {

@@ -6,12 +6,18 @@ const id = route.params.id;
 
 const setlists: Ref<CustomSetlist[]> = useStorage("setlists", []);
 const setlist: ComputedRef<CustomSetlist | undefined> = computed(() => setlists.value.find((s: CustomSetlist) => s._id == id));
-
 const songStore = useSongStore();
+songStore.setPlanSongs(setlist.value?.songs || []);
+
 watch(() => setlist.value, () => {
+  console.log("setlist changed");
   if (setlist.value) {
     songStore.setPlanSongs(setlist.value.songs);
   }
+});
+
+useSeoMeta({
+  title: () => `${setlist.value?.title || "Custom Setlist"} • Fluro Sheet Music Viewer`,
 });
 </script>
 

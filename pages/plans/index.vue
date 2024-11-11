@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 const serviceStore = useServiceStore();
 serviceStore.getServices();
+
+useSeoMeta({
+  title: "Service Plans • Fluro Sheet Music Viewer",
+});
 </script>
 
 <template>

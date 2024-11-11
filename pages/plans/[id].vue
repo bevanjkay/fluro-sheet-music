@@ -9,8 +9,20 @@ const { data: plan, status } = useFluroData("plan", id) as { data: Ref<Plan>, st
 const songStore = useSongStore();
 
 watch(() => plan.value, () => {
+
   const planSongs: PlanSong[] = plan.value.schedules.filter((schedule: Schedule) => schedule.type == "song");
   songStore.setPlanSongs(planSongs);
+});
+
+const title = computed(() => {
+  if (plan.value) {
+    return `${formatDate(plan.value.startDate)} • ${plan.value.title || "Service Plan"} • Fluro Sheet Music Viewer`;
+  }
+  return "Service Plan • Fluro Sheet Music Viewer";
+});
+
+useSeoMeta({
+  title: () => title.value,
 });
 </script>
 

@@ -30,6 +30,9 @@ const populatedSongs = computed(() => {
 
     matchedSong.pages = [1];
     const populatedSheets: Sheet[] = [];
+    if (!matchedSong.data.sheetMusic) {
+      matchedSong.data.sheetMusic = [];
+    }
     matchedSong.data.sheetMusic.forEach((sheet) => {
       const matchedSheet = sheets.find((s: Sheet) => s._id == sheet._id);
       if (matchedSheet) {
@@ -89,6 +92,7 @@ onBeforeUnmount(() => {
   <div>
     <div class="pdf">
       <Swiper
+        v-if="songStore.state.planSongs && songStore.state.planSongs.length"
         auto-height
         :direction="vertical ? 'vertical' : 'horizontal'"
       >
@@ -97,8 +101,12 @@ onBeforeUnmount(() => {
             v-for="page in findPages(song)"
             :key="song._id + page"
           >
+          <div v-if="!song.sheetMusic?.length" class="page" style="min-height: 85vh"> 
+            <h1>{{ song.title }}</h1>
+            <h3 style="color: darkred">No sheet music for this song.</h3>
+          </div>
             <PdfRender
-              v-if="song.selectedSheet"
+              v-if="song.selectedSheet && song.sheetMusic?.length"
               :page="page"
               :source="createURL(song.selectedSheet)"
               :song="song._id"
@@ -107,6 +115,15 @@ onBeforeUnmount(() => {
           </SwiperSlide>
         </template>
       </Swiper>
+      <div v-else class="page">
+        <h2>No songs in this plan.</h2>
+        <div
+class="grid row gap-1 start" style="max-width: 400px;">
+        <Button @click="navigateTo('/plans')">View list of service plans</Button>
+        <Button @click="navigateTo('/songs')">View list of songs</Button>
+        <Button @click="navigateTo('/')">Go Home</Button>
+      </div>
+      </div>
     </div>
   </div>
 </template>

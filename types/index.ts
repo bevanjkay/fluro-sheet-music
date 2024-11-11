@@ -14,7 +14,8 @@ declare global {
   interface Plan {
     _id: string
     title: string
-    schedules: Schedule[]
+    schedules: Schedule[],
+    startDate: Date,
   }
 
   interface PlanSong {

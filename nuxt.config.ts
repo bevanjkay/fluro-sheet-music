@@ -60,7 +60,6 @@ export default defineNuxtConfig({
   ssr: false,
   devtools: {
     enabled: true,
-
     timeline: {
       enabled: true,
     },
@@ -69,6 +68,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   typescript: {
     typeCheck: true,
+    strict: true,
   },
   primevue: {
     options: {

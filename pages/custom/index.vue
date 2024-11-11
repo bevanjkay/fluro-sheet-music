@@ -5,6 +5,10 @@ const setlists: Ref<CustomSetlist[]> = useStorage("setlists", []);
 
 const songStore = useSongStore();
 
+useSeoMeta({
+  title: "Custom Setlists • Fluro Sheet Music Viewer",
+});
+
 const create = ref(false);
 const edit = ref(false);
 

@@ -3,12 +3,16 @@ import { useFluroData } from "@/utils/fluro";
 
 const route = useRoute();
 const id = route.params.id;
-const { data: song, status } = useFluroData("song", id);
+const { data: song, status } = useFluroData("song", id) as { data: Ref<Song | null>, status: Ref<string> };
 
 const songStore = useSongStore();
 
 watch(() => song.value, () => {
-  songStore.setPlanSongs([song.value as PlanSong]);
+  songStore.setPlanSongs([song.value as unknown as PlanSong]);
+});
+
+useSeoMeta({
+  title: () => `${song.value?.title || "Song"} • Fluro Sheet Music Viewer`,
 });
 </script>
 

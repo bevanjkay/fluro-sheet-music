@@ -7,6 +7,10 @@ const filteredSongs = computed(() => {
   if (!query.value) return songStore.state.songs;
   return songStore.state.songs.filter(song => song.title.toLowerCase().includes(query.value.toLowerCase()));
 });
+
+useSeoMeta({
+  title: "Songs • Fluro Sheet Music Viewer",
+});
 </script>
 
 <template>

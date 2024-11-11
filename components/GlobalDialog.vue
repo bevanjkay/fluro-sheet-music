@@ -2,6 +2,7 @@
 import { useStorage } from "@vueuse/core";
 
 const songStore = useSongStore();
+const sheetStore = useSheetStore();
 
 const vertical: Ref<boolean> = useStorage("vertical", false);
 
@@ -11,6 +12,14 @@ const verticalOptions = [
 ];
 
 const keySelection: Ref<Record<string, string>> = useStorage("keys", {});
+
+const clearCache = () => {
+  songStore.clearCache();
+  songStore.getSongs();
+  sheetStore.clearCache();
+  sheetStore.getSheets();
+  reloadNuxtApp();
+};
 </script>
 
 <template>
@@ -41,5 +50,12 @@ const keySelection: Ref<Record<string, string>> = useStorage("keys", {});
       option-label="name"
       option-value="value"
     />
+    <div>
+    <Button
+      class="mt-4"
+      label="Clear Cache"
+      @click="clearCache"
+      />
+    </div>
   </div>
 </template>

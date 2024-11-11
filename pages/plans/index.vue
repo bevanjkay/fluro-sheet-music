@@ -19,9 +19,7 @@ useSeoMeta({
         <template #header>
           <Image
             v-if="service.mainImage"
-            style="background: #eeeeee; aspect-ratio: 16/9; object-fit: cover;"
-            width="100%"
-            alt="user header"
+            class="image-w-placeholder"
             :src="`https://api.fluro.io/get/${service.mainImage._id}`"
           />
         </template>

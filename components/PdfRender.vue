@@ -23,7 +23,10 @@ const emit = defineEmits<{
 
 const handleLoaded = ({ numPages }: { numPages: number }): void => {
   emit("data", { id: props.song, numPages });
+  key.value = Math.random();
 };
+
+const key = ref(Math.random());
 </script>
 
 <template>

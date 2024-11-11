@@ -93,7 +93,6 @@ onBeforeUnmount(() => {
     <div class="pdf">
       <Swiper
         v-if="songStore.state.planSongs && songStore.state.planSongs.length"
-        auto-height
         :direction="vertical ? 'vertical' : 'horizontal'"
       >
         <template v-for="song in populatedSongs">

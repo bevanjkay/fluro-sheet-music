@@ -75,3 +75,18 @@ canvas {
   padding: 3em;
   min-height: calc(100vh - 60px);
 }
+
+.image-w-placeholder {
+  aspect-ratio: 16/9;
+  background-color: #fff;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+  }
+}

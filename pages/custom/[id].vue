@@ -1,18 +1,22 @@
 <script lang="ts" setup>
-import { useStorage } from "@vueuse/core";
+import { useStorage } from '@vueuse/core'
 
-const route = useRoute();
-const id = route.params.id;
+const route = useRoute()
+const id = route.params.id
 
-const setlists = useStorage("setlists", []);
-const setlist = computed(() => setlists.value.find(s => s._id == id));
+const setlists: Ref<CustomSetlist[]> = useStorage('setlists', [])
+const setlist: ComputedRef<CustomSetlist | undefined> = computed(() => setlists.value.find((s: CustomSetlist) => s._id == id))
 
-const songStore = useSongStore();
-songStore.setPlanSongs(setlist.value.songs);
+const songStore = useSongStore()
+watch(() => setlist.value, () => {
+  if (setlist.value) {
+    songStore.setPlanSongs(setlist.value.songs)
+  }
+})
 </script>
 
 <template>
-    <div style="position: relative;">
-        <PdfRenderer v-if="songStore.state.planSongs && songStore.state.planSongs.length" />
-    </div>
+  <div style="position: relative;">
+    <PdfWrapper v-if="songStore.state.planSongs && songStore.state.planSongs.length" />
+  </div>
 </template>

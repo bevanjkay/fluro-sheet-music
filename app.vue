@@ -1,95 +1,90 @@
 <script lang="ts" setup>
-import { getUserSession, refresh } from "./utils/login";
-import { useStorage } from "@vueuse/core";
-import Dialog from "@/components/Dialog.vue";
+import { useStorage } from '@vueuse/core'
+import { getUserSession, refresh } from './utils/login'
+import GlobalDialog from '@/components/GlobalDialog.vue'
 
-const user = useStorage("_fluro_user", {});
-const session = ref(null);
-const loading = ref(true);
+const user: Ref<User> = useStorage('_fluro_user', { token: '', refreshToken: '' })
+const loading: Ref<boolean> = ref(true)
 
 onBeforeMount(async () => {
-  console.log("User", user.value)
-  if (!user.value) return;
+  if (!user.value) return
   try {
-    const response = await getUserSession(user.value);
-    console.log(response);
-  } catch (error) {
+    const response = await getUserSession(user.value)
+    console.log(response)
+  }
+  catch {
     try {
-      console.log("Refreshing token", user.value.refreshToken);
-      const response = await refresh(user.value.refreshToken);
-      user.value.token = response.token;
-    } catch (e) {
-      user.value = {};
+      console.log('Refreshing token', user.value.refreshToken)
+      const response = await refresh(user.value.refreshToken)
+      user.value.token = response.token
+    }
+    catch {
+      user.value = {
+        token: '',
+        refreshToken: '',
+      }
     }
   }
 })
 
-const songStore = useSongStore();
-const sheetStore = useSheetStore();
+const songStore = useSongStore()
+const sheetStore = useSheetStore()
 
 onMounted(async () => {
-
   if (user.value) {
-    await songStore.getSongs();
-    await sheetStore.getSheets();
+    await songStore.getSongs()
+    await sheetStore.getSheets()
   }
 
-  loading.value = false;
+  loading.value = false
 })
-
-
-const expiry = computed(() => {
-  if (!session.value) return null;
-  const now = new Date();
-  const expires = new Date(user.value.expires);
-  return Math.floor((expires.getTime() - now.getTime()) / 1000);
-})
-
-const visible = ref(false);
 
 const items = ref([
   {
-    label: "Home",
-    icon: "pi pi-fw pi-home",
+    label: 'Home',
+    icon: 'pi pi-fw pi-home',
     command: () => {
-      navigateTo("/");
+      navigateTo('/')
     },
   },
   {
-    label: "Service Plans",
-    icon: "pi pi-fw pi-calendar",
+    label: 'Service Plans',
+    icon: 'pi pi-fw pi-calendar',
     command: () => {
-      navigateTo("/plans");
+      navigateTo('/plans')
     },
   },
   {
-    label: "Songs",
-    icon: "pi pi-fw pi-list",
+    label: 'Songs',
+    icon: 'pi pi-fw pi-list',
     command: () => {
-      navigateTo("/songs");
+      navigateTo('/songs')
     },
   },
   {
-    label: "Custom Setlists",
-    icon: "pi pi-fw pi-th-large",
+    label: 'Custom Setlists',
+    icon: 'pi pi-fw pi-th-large',
     command: () => {
-      navigateTo("/custom");
+      navigateTo('/custom')
     },
   },
   {
-    label: "Settings",
-    icon: "pi pi-fw pi-cog",
+    label: 'Settings',
+    icon: 'pi pi-fw pi-cog',
     command: () => {
-      dialog.open(Dialog, {})
+      dialog.open(GlobalDialog, {})
     },
-  }
-]);
+  },
+])
 
-const dialog = useDialog();
+const dialog = useDialog()
 
 const logout = () => {
-  user.value = {};
-  navigateTo("/login");
+  user.value = {
+    token: '',
+    refreshToken: '',
+  }
+  navigateTo('/login')
 }
 </script>
 
@@ -99,15 +94,23 @@ const logout = () => {
     <Menubar :model="items">
       <template #end>
         <div class="flex">
-          <Button @click="logout">Logout</Button>
+          <Button @click="logout">
+            Logout
+          </Button>
         </div>
       </template>
     </Menubar>
-    <div v-if="loading" style="padding:25px;">
+    <div
+      v-if="loading"
+      style="padding:25px;"
+    >
       <h2>Loading data...</h2>
       <ProgressSpinner />
     </div>
-    <NuxtPage v-if="!loading" style="background: #f7f9fb;" />
+    <NuxtPage
+      v-if="!loading"
+      style="background: #f7f9fb;"
+    />
   </div>
 </template>
 

@@ -6,10 +6,13 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/eslint": "^0.6.1",
     "@pinia/nuxt": "^0.7.0",
     "@primevue/nuxt-module": "^4.2.1",
     "@primevue/themes": "^4.2.1",
@@ -23,6 +26,9 @@
     "vue-router": "latest"
   },
   "devDependencies": {
-    "sass-embedded": "^1.80.6"
+    "@nuxt/types": "^2.18.1",
+    "@nuxt/typescript-build": "^3.0.2",
+    "sass-embedded": "^1.80.6",
+    "vue-tsc": "^2.1.10"
   }
 }

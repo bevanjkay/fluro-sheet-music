@@ -1,5 +1,5 @@
-import { definePreset } from '@primevue/themes';
-import Aura from '@primevue/themes/aura';
+import { definePreset } from '@primevue/themes'
+import Aura from '@primevue/themes/aura'
 
 const customPreset = definePreset(Aura, {
   semantic: {
@@ -14,7 +14,7 @@ const customPreset = definePreset(Aura, {
       700: '{zinc.700}',
       800: '{zinc.800}',
       900: '{zinc.900}',
-      950: '{zinc.950}'
+      950: '{zinc.950}',
     },
     colorScheme: {
       light: {
@@ -22,57 +22,70 @@ const customPreset = definePreset(Aura, {
           color: '{zinc.950}',
           inverseColor: '#ffffff',
           hoverColor: '{zinc.900}',
-          activeColor: '{zinc.800}'
+          activeColor: '{zinc.800}',
         },
         highlight: {
           background: '{zinc.950}',
           focusBackground: '{zinc.700}',
           color: '#ffffff',
-          focusColor: '#ffffff'
-        }
+          focusColor: '#ffffff',
+        },
       },
       dark: {
         primary: {
           color: '{zinc.50}',
           inverseColor: '{zinc.950}',
           hoverColor: '{zinc.100}',
-          activeColor: '{zinc.200}'
+          activeColor: '{zinc.200}',
         },
         highlight: {
           background: 'rgba(250, 250, 250, .16)',
           focusBackground: 'rgba(250, 250, 250, .24)',
           color: 'rgba(255,255,255,.87)',
-          focusColor: 'rgba(255,255,255,.87)'
-        }
-      }
-    }
-  }
-});
+          focusColor: 'rgba(255,255,255,.87)',
+        },
+      },
+    },
+  },
+})
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-04-03',
+  modules: [
+    'nuxt-swiper',
+    '@primevue/nuxt-module',
+    '@pinia/nuxt',
+    '@nuxt/eslint',
+  ],
+  ssr: false,
   devtools: {
     enabled: true,
 
     timeline: {
-      enabled: true
-    }
+      enabled: true,
+    },
   },
-  ssr: false,
-  modules: ['nuxt-swiper', '@primevue/nuxt-module', '@pinia/nuxt'],
   css: [
-    "@/assets/main.scss",
-    "primeicons/primeicons.css",
+    '@/assets/main.scss',
+    'primeicons/primeicons.css',
   ],
+  compatibilityDate: '2024-04-03',
+  typescript: {
+    typeCheck: true,
+  },
+  eslint: {
+    config: {
+      stylistic: true,
+    },
+  },
   primevue: {
     options: {
       theme: {
         preset: customPreset,
         options: {
           darkModeSelector: false,
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 })

@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="page∂">
+  <div class="page">
     <h1>Welcome.</h1>
     <div class="grid row gap-2">
       <Card style="max-width:25em;">

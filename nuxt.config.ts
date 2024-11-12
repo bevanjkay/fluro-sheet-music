@@ -58,6 +58,13 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
   ],
   ssr: false,
+  app: {
+    head: {
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      ]
+    }
+  }
   devtools: {
     enabled: true,
     timeline: {

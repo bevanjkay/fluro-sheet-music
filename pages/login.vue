@@ -86,5 +86,6 @@ const useLogin = async (): Promise<void> => {
         </div>
       </template>
     </Card>
+    <Message class="footer" severity="secondary">Made with ❤️ by <a href="https://bevankay.me" target="_blank">Bevan Kay</a></Message>
   </div>
 </template>

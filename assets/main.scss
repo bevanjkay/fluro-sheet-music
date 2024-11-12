@@ -73,7 +73,8 @@ canvas {
 
 .page {
   padding: 3em;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 50px);
+  position: relative;
 }
 
 .image-w-placeholder {
@@ -89,4 +90,11 @@ canvas {
     width: 100%;
     height: auto;
   }
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 10px;
 }

@@ -49,6 +49,6 @@
     "@rollup/rollup-linux-x64-musl": "4.22.5",
     "@rollup/rollup-win32-arm64-msvc": "4.22.5",
     "@rollup/rollup-win32-ia32-msvc": "4.22.5",
-    "@rollup/rollup-win32-x64-msvc": "4.22.5",
+    "@rollup/rollup-win32-x64-msvc": "4.22.5"
   }
 }

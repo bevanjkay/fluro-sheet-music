@@ -36,56 +36,38 @@ const useLogin = async (): Promise<void> => {
 </script>
 
 <template>
-  <div class="page">
-    <Card style="max-width: 60ch">
+  <page class="pt-12">
+    <Typography variant="h1" size="heading-lg">Welcome to Fluro Sheet Music Viewer</Typography>
+    <Card class="w-fit p-4 mt-6">
       <template #title>
-        <h1 style="margin: 0;">
-          Login
-        </h1>
-        <p>Login using your Fluro account.</p>
+        <typography variant="h2" size="heading-md">
+          Please login to continue
+        </typography>
+        <typography variant="p" size="text"><small>Login using your Fluro account details.</small></typography>
       </template>
       <template #content>
-        <div class="grid row gap-1">
+        <div class="flex flex-col gap-4">
           <FloatLabel variant="in">
-            <InputText
-              v-model="username"
-              :disabled="pending"
-              size="large"
-              name="username"
-              type="text"
-            />
+            <InputText v-model="username" :disabled="pending" size="large" name="username" type="text" />
             <label for="username">Username</label>
           </FloatLabel>
           <FloatLabel variant="in">
-            <Password
-              v-model="password"
-              :disabled="pending"
-              size="large"
-              name="password"
-              :feedback="false"
-            />
+            <Password v-model="password" :disabled="pending" size="large" name="password" :feedback="false" />
             <label for="password">Password</label>
           </FloatLabel>
-          <Message
-            v-if="error"
-            severity="error"
-            icon="pi pi-times-circle"
-            class="mb-2"
-          >
+          <Message v-if="error" severity="error" icon="pi pi-times-circle" class="mb-2">
             {{ error }}
           </Message>
           <div class="start">
             <Button
-              :disabled="pending"
-              size="large"
-              type="submit"
-              :label="pending ? 'Attempting login...' : 'Login'"
-              @click="useLogin"
-            />
+:disabled="pending" size="large" type="submit" :label="pending ? 'Attempting login...' : 'Login'"
+              @click="useLogin" />
           </div>
         </div>
       </template>
     </Card>
-    <Message class="footer" severity="secondary">Made with ❤️ by <a href="https://bevankay.me" target="_blank">Bevan Kay</a></Message>
-  </div>
+    <AbsoluteFooter>
+      Made with ❤️ by <a href="https://bevankay.me" target="_blank">Bevan Kay</a>
+    </AbsoluteFooter>
+  </page>
 </template>

@@ -14,7 +14,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="page">
+  <page>
     <FloatLabel
       variant="in"
       style="margin-bottom: 2rem;"
@@ -26,15 +26,17 @@ useSeoMeta({
       />
       <label for="in_label">Search Songs</label>
     </FloatLabel>
+    <div class="flex flex-col gap-4">
     <Card
       v-for="song in filteredSongs"
       :key="song._id"
-      style="max-width:25em; margin-bottom: 2rem;"
+      class="card"
     >
       <template #title>
-        <h3 style="margin-bottom: 0; margin-top: 0;">
+        <Typography variant="h3" size="heading-md">
           {{ song.title }}
-        </h3>
+        </Typography>
+        <Typography v-if="song.data.firstLine" variant="p" size="text">{{ song.data.firstLine }}</Typography>
       </template>
       <template #footer>
         <Button
@@ -45,5 +47,6 @@ useSeoMeta({
         </Button>
       </template>
     </Card>
-  </div>
+    </div>
+  </page>
 </template>

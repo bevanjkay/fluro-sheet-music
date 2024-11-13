@@ -1,7 +1,7 @@
 declare global {
 
   interface CustomSetlist {
-    _id?: string
+    _id: string
     title: string
     songs: PlanSong[]
     created: Date | null
@@ -72,10 +72,12 @@ declare global {
   interface SongData {
     key: string
     sheetMusic: Sheet[]
+    firstLine: string
   }
 
   interface User {
     token: string
-    refreshToken: string
+    refreshToken: string,
+    firstName?: string
   }
 }

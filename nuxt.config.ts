@@ -56,6 +56,8 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
     "@pinia/nuxt",
     "@nuxt/eslint",
+    "@nuxtjs/tailwindcss",
+    "@nuxt/fonts",
   ],
   ssr: false,
   app: {
@@ -71,7 +73,7 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  css: ["@/assets/main.scss", "primeicons/primeicons.css"],
+  css: ["@/assets/main.scss", "@/assets/css/tailwind.css", "primeicons/primeicons.css"],
   compatibilityDate: "2024-04-03",
   typescript: {
     typeCheck: true,
@@ -84,6 +86,7 @@ export default defineNuxtConfig({
         options: {
           darkModeSelector: false,
         },
+        cssLayerOrder: "tailwind-base, primevue, tailwind-utilities"
       },
     },
   },

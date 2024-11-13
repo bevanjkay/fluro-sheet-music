@@ -23,39 +23,31 @@ const clearCache = () => {
 </script>
 
 <template>
-  <div class="container-sm">
-    <h2>Options</h2>
-    <div
-      v-for="song in songStore.state.populatedSongs"
-      :key="song._id"
-      style="margin-bottom: 2em;"
-    >
-      <label
-        style="clear:both;display:block;"
-        :for="song._id"
-      ><strong>{{ song.title }}</strong></label>
-      <Select
-        v-model="keySelection[song._id]"
-        :options="song.sheetMusic"
-        option-label="title"
-        option-value="_id"
-        placeholder="Select a Key"
-        class="w-full md:w-56"
-      />
+  <div>
+    <div class="flex flex-col gap-4">
+    <Typography size="heading-lg" variant="h3">Options</Typography>
+    <div class="flex flex-col gap-3">
+      <div v-for="song in songStore.state.populatedSongs" :key="song._id" class="flex flex-col gap-1">
+        <label :for="song._id"><strong>{{ song.title }}</strong></label>
+        <Select
+v-model="keySelection[song._id]" :options="song.sheetMusic" option-label="title" option-value="_id"
+          placeholder="Select a Key" class="w-full " />
+      </div>
     </div>
-    <label><strong>Scroll Direction</strong></label><br>
-    <SelectButton
-      v-model="vertical"
-      :options="verticalOptions"
-      option-label="name"
-      option-value="value"
-    />
-    <div>
-    <Button
-      class="mt-4"
-      label="Clear Cache"
-      @click="clearCache"
-      />
+      <div>
+        <label><strong>Scroll Direction</strong></label><br>
+        <SelectButton v-model="vertical" :options="verticalOptions" option-label="name" option-value="value" />
+      </div>
+      <div>
+        <Button class="mt-4" label="Clear Cache" @click="clearCache" />
+      </div>
     </div>
+
   </div>
 </template>
+
+<style>
+.p-dialog {
+  width: clamp(200px, 95vw, 600px);
+}
+</style>

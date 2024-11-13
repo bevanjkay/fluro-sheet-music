@@ -5,8 +5,9 @@ export const useServiceStore = defineStore("serviceStore", () => {
 
   async function getServices() {
     try {
-      const { data } = await useAsyncFluroData("service", null, { sort: "startDate", status: "active", allDefinitions: true }) as { data: Ref<Service[]> };
-      state.services = data.value;
+      const { data } = await useAsyncFluroData("event", null, { sort: "startDate", status: "active", allDefinitions: true }) as { data: Ref<Service[]> };
+      const filtered = data.value.filter((service: Service) => service.plans.length);
+      state.services = filtered;
     }
     catch (error) {
       console.error(error);

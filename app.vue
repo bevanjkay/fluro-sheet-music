@@ -44,7 +44,7 @@ onMounted(async () => {
   loading.value = false;
 });
 
-const items = ref([
+const menuItems = ref([
   {
     label: "Home",
     icon: "pi pi-fw pi-home",
@@ -73,60 +73,57 @@ const items = ref([
       navigateTo("/custom");
     },
   },
-  {
-    label: "Settings",
-    icon: "pi pi-fw pi-cog",
-    command: () => {
-      dialog.open(GlobalDialog, {});
-    },
-  },
 ]);
 
 const dialog = useDialog();
+const confirm = useConfirm();
+const toast = useToast();
 
 const logout = () => {
-  user.value = {
-    token: "",
-    refreshToken: "",
-  };
-  navigateTo("/login");
+  confirm.require({
+    header: "Logout",
+    message: "Are you sure you want to logout?",
+    icon: "pi pi-exclamation-triangle",
+    accept: () => {
+      user.value = {
+        token: "",
+        refreshToken: "",
+      };
+      toast.add({
+        severity: "success",
+        summary: "Logged out",
+        detail: "You have been logged out.",
+        life: 3000,
+      });
+      navigateTo("/login");
+    },
+  });
+};
+
+const settings = () => {
+  dialog.open(GlobalDialog, {});
 };
 </script>
 
 <template>
   <div>
     <DynamicDialog />
-    <Menubar :model="items">
-      <template #end>
-        <div class="flex">
-          <Button @click="logout">
-            Logout
-          </Button>
-        </div>
-      </template>
-    </Menubar>
-    <div
-      v-if="loading"
-      style="padding:25px;"
-    >
-      <h2>Loading data...</h2>
-      <ProgressSpinner />
+    <ConfirmDialog />
+    <Toast />
+    <div class="absolute p-2 z-20 w-full">
+      <Menubar v-if="user?.token" class="w-full" :model="menuItems">
+        <template #end>
+          <div class="flex flex-row gap-4">
+            <Button icon="pi pi-cog" variant="text" label="Settings" severity="secondary" @click="settings" />
+            <Button label="Logout" icon="pi pi-sign-out" @click="logout" />
+          </div>
+        </template>
+      </Menubar>
     </div>
-    <NuxtPage
-      v-if="!loading"
-      style="background: #f7f9fb;"
-    />
+    <page v-if="loading">
+      <Typography variant="h3" size="heading-md">Loading data...</Typography>
+      <ProgressSpinner />
+    </page>
+    <NuxtPage v-if="!loading" :user="user" style="background: #f7f9fb;" />
   </div>
 </template>
-
-<style scoped>
-* {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.flex {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-</style>

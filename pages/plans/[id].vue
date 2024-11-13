@@ -28,12 +28,10 @@ useSeoMeta({
 
 <template>
   <div>
-    <div
-      v-if="status !== 'success'"
-      class="page"
-    >
-      <h2>Loading plan...</h2><ProgressSpinner />
-    </div>
+    <page v-if="status !== 'success'">
+      <Typography variant="h3" size="heading-md">Loading plan...</Typography>
+      <ProgressSpinner />
+    </page>
     <PdfWrapper />
   </div>
 </template>

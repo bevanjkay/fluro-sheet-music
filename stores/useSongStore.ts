@@ -13,12 +13,13 @@ export const useSongStore = defineStore("songStore", () => {
   async function getSongs() {
 
     if (persistedSongsExpiry.value > Date.now()) {
-      state.songs = persistedSongs.value;
-      return;
+      if (state.songs.length > 0) {
+        state.songs = persistedSongs.value;
+        return;
+      }
     }
 
     try {
-      if (state.songs.length > 0) return;
       const { data } = await useAsyncFluroData("song", null, { sort: "title" }) as { data: Ref<Song[]> };
       state.songs = data.value;
     }

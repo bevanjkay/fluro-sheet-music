@@ -1,11 +1,17 @@
 <script lang="ts" setup>
 const songStore = useSongStore();
 
+onMounted(() => {
+  if (songStore.state.songs.length === 0) {
+    songStore.getSongs();
+  };
+});
+
 const query = ref("");
 
 const filteredSongs = computed(() => {
   if (!query.value) return songStore.state.songs;
-  return songStore.state.songs.filter(song => song.title.toLowerCase().includes(query.value.toLowerCase()));
+  return songStore.state.songs.filter((song: Song) => song.title.toLowerCase().includes(query.value.toLowerCase()));
 });
 
 useSeoMeta({
@@ -26,6 +32,7 @@ useSeoMeta({
       />
       <label for="in_label">Search Songs</label>
     </FloatLabel>
+    
     <div class="flex flex-col gap-4">
     <Card
       v-for="song in filteredSongs"

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { defineProps, defineEmits } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
+import { useStorage, type RemovableRef } from "@vueuse/core";
 
 const props = defineProps({
   source: {
@@ -27,11 +28,18 @@ const handleLoaded = ({ numPages }: { numPages: number }): void => {
 };
 
 const key = ref(Math.random());
+
+const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
+
+
+const source = computed(() => {
+  return `${props.source}?access_token=${user.value.token}`;
+});
 </script>
 
 <template>
   <VuePdfEmbed
-    :source="props.source"
+    :source="source"
     :page="props.page"
     @loaded="handleLoaded"
   />

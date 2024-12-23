@@ -100,7 +100,7 @@ onBeforeUnmount(() => {
             v-for="page in findPages(song)"
             :key="song._id + page"
           >
-          <div v-if="!song.sheetMusic?.length" class="page" style="min-height: 85vh"> 
+          <div v-if="!song.sheetMusic?.length" class="p-12 relative min-h-dvh pt-24" style="min-height: 85vh"> 
             <h1>{{ song.title }}</h1>
             <h3 style="color: darkred">No sheet music for this song.</h3>
           </div>
@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
           </SwiperSlide>
         </template>
       </Swiper>
-      <div v-else class="page">
+      <div v-else class="p-12 relative min-h-dvh pt-24">
         <h2>No songs in this plan.</h2>
         <div
 class="grid row gap-1 start" style="max-width: 400px;">

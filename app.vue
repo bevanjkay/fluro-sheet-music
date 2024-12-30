@@ -5,8 +5,9 @@ import GlobalDialog from "@/components/GlobalDialog.vue";
 
 const user: Ref<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 const loading: Ref<boolean> = ref(true);
+const darkMode: Ref<boolean> = useStorage("darkMode", false);
 
-useSeoMeta({
+  useSeoMeta({
   title: "Fluro Sheet Music Viewer",
   ogTitle: "Fluro Sheet Music Viewer",
 });
@@ -35,13 +36,24 @@ onBeforeMount(async () => {
 const songStore = useSongStore();
 const sheetStore = useSheetStore();
 
+const setDarkMode = (value: boolean) => {
+  const root = document.documentElement;
+  if (value) {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+};
+
 onMounted(async () => {
   if (user.value) {
     await songStore.getSongs();
     await sheetStore.getSheets();
   }
 
+  setDarkMode(darkMode.value);
   loading.value = false;
+
 });
 
 const menuItems = ref([
@@ -103,6 +115,10 @@ const logout = () => {
 const settings = () => {
   dialog.open(GlobalDialog, {});
 };
+
+watch(darkMode, (value) => {
+  setDarkMode(value);
+});
 </script>
 
 <template>
@@ -124,6 +140,6 @@ const settings = () => {
       <Typography variant="h3" size="heading-md">Loading data...</Typography>
       <ProgressSpinner />
     </page>
-    <NuxtPage v-if="!loading" :user="user" style="background: #f7f9fb;" />
+    <NuxtPage v-if="!loading" :user="user" />
   </div>
 </template>

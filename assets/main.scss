@@ -17,6 +17,9 @@ canvas {
   width: auto !important;
 }
 
-.pdf {
-  background: white;
+.dark {
+
+  .pdf {
+    filter: invert(0.9) grayscale(0.9);
+  }
 }

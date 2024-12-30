@@ -11,6 +11,13 @@ const verticalOptions = [
   { name: "Horizontal", value: false },
 ];
 
+const darkModeOptions = [
+  { name: "Light", value: false },
+  { name: "Dark", value: true },
+];
+
+const darkMode: Ref<boolean> = useStorage("darkMode", false);
+
 const keySelection: Ref<Record<string, string>> = useStorage("keys", {});
 
 const clearCache = () => {
@@ -37,6 +44,10 @@ v-model="keySelection[song._id]" :options="song.sheetMusic" option-label="title"
       <div>
         <label><strong>Scroll Direction</strong></label><br>
         <SelectButton v-model="vertical" :options="verticalOptions" option-label="name" option-value="value" />
+      </div>
+      <div>
+        <label><strong>Dark Mode</strong></label><br>
+        <SelectButton v-model="darkMode" :options="darkModeOptions" option-label="name" option-value="value" />
       </div>
       <div>
         <Button class="mt-4" label="Clear Cache" @click="clearCache" />

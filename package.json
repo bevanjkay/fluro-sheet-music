@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "check": "nuxt typecheck",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "lint": "eslint .",
@@ -28,9 +29,14 @@
     "vue-router": "latest"
   },
   "devDependencies": {
+    "@nuxt/eslint-config": "^1.2.0",
     "@nuxt/types": "^2.18.1",
     "@nuxt/typescript-build": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "eslint": "^9.22.0",
+    "eslint-plugin-vue": "^10.0.0",
     "sass-embedded": "^1.80.6",
+    "vue-eslint-parser": "^10.1.1",
     "vue-tsc": "^2.1.10"
   }
 }

@@ -32,7 +32,7 @@ const clearCache = () => {
 <template>
   <div>
     <div class="flex flex-col gap-4">
-    <Typography size="heading-lg" variant="h3">Options</Typography>
+    <TypographyWrapper size="heading-lg" variant="h3">Options</TypographyWrapper>
     <div class="flex flex-col gap-3">
       <div v-for="song in songStore.state.populatedSongs" :key="song._id" class="flex flex-col gap-1">
         <label :for="song._id"><strong>{{ song.title }}</strong></label>

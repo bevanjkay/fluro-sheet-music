@@ -7,33 +7,36 @@ const user: Ref<User> = useStorage("_fluro_user", { token: "", refreshToken: "" 
 const loading: Ref<boolean> = ref(true);
 const darkMode: Ref<boolean> = useStorage("darkMode", false);
 
-  useSeoMeta({
+useSeoMeta({
   title: "Fluro Sheet Music Viewer",
   ogTitle: "Fluro Sheet Music Viewer",
 });
 
 onBeforeMount(async () => {
-  if (!user.value) return;
+  if (!user.value) {
+    navigateTo("/login");
+    return;
+  };
+
   try {
     const response = await getUserSession(user.value);
-    console.log(response);
-  }
-  catch {
+    console.log("RESPONSE", response);
+  } catch {
+
     try {
-      console.log("Refreshing token", user.value.refreshToken);
+      if (user.value.refreshToken === "") {
+        throw new Error("No refresh token");
+      }
+      console.info("Refreshing token", user.value.refreshToken);
       const response = await refresh(user.value.refreshToken);
       user.value.token = response.token;
-    }
-    catch {
+    } catch {
       user.value = {
         token: "",
         refreshToken: "",
       };
     };
 
-    if (isAuthenticated()) {
-      return;
-    }
     navigateTo("/login");
   }
 });
@@ -141,10 +144,12 @@ watch(darkMode, (value) => {
         </template>
       </Menubar>
     </div>
-    <page v-if="loading">
-      <Typography variant="h3" size="heading-md">Loading data...</Typography>
+    <PageWrapper v-if="loading">
+      <TypographyWrapper variant="h3" size="heading-md">
+        Loading data...
+      </TypographyWrapper>
       <ProgressSpinner />
-    </page>
-    <NuxtPage v-if="!loading" :user="user" />
+      <NuxtPage v-if="!loading" :user="user" />
+    </PageWrapper>
   </div>
 </template>

@@ -18,10 +18,10 @@ useSeoMeta({
 
 <template>
   <div style="position: relative;">
-    <page v-if="status !== 'success'">
-      <Typography variant="h3" size="heading-md">Loading plan...</Typography>
+    <PageWrapper v-if="status !== 'success'">
+      <TypographyWrapper variant="h3" size="heading-md">Loading plan...</TypographyWrapper>
       <ProgressSpinner />
-    </page>
+      </PageWrapper>
     <PdfWrapper v-if="songStore.state.planSongs && songStore.state.planSongs.length" />
   </div>
 </template>

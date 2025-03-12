@@ -13,14 +13,20 @@ const darkMode: Ref<boolean> = useStorage("darkMode", false);
 });
 
 onBeforeMount(async () => {
-  if (!user.value) return;
+  if (!user.value || !user.value.token) {
+    navigateTo("/login");
+    return;
+  };
+
   try {
     const response = await getUserSession(user.value);
     console.log(response);
-  }
-  catch {
+  } catch {
     try {
-      console.log("Refreshing token", user.value.refreshToken);
+      if (!user.value.refreshToken) {
+        throw new Error("No refresh token");
+      }
+      console.info("Refreshing token", user.value.refreshToken);
       const response = await refresh(user.value.refreshToken);
       user.value.token = response.token;
     }

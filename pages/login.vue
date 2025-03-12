@@ -8,6 +8,12 @@ const password: Ref<string> = ref<string>("");
 const error: Ref<string> = ref("");
 const pending: Ref<boolean> = ref(false);
 
+onBeforeMount(() => {
+  if (isAuthenticated()) {
+    navigateTo({ path: "/", replace: true });
+  }
+});
+
 const useLogin = async (): Promise<void> => {
   pending.value = true;
 
@@ -15,7 +21,7 @@ const useLogin = async (): Promise<void> => {
     const response = await login(username.value, password.value);
     if (response.token) {
       user.value = response;
-      reloadNuxtApp({path: "/" });
+      navigateTo({ path: "/", replace: true });
     }
     else {
       error.value = response.message;

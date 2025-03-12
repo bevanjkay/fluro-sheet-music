@@ -103,9 +103,9 @@ const clear = () => {
 </script>
 
 <template>
-  <PageWrapper>
+  <Page>
     <div class="flex flex-col gap-4 w-fit">
-      <TypographyWrapper variant="h1" size="heading-lg">Custom Setlists</TypographyWrapper>
+      <Typography variant="h1" size="heading-lg">Custom Setlists</Typography>
       <Message severity="warning">
         <strong>Note:</strong> Setlists are only stored in your browser. They will be lost if you clear your cache.
       </Message>
@@ -196,5 +196,5 @@ v-if="isDeleting(setlist._id)" severity="secondary" class="p-button-grey"
         </Card>
       </div>
     </template>
-  </PageWrapper>
+  </Page>
 </template>

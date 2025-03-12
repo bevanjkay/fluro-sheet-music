@@ -8,10 +8,10 @@ useSeoMeta({
 </script>
 
 <template>
-  <PageWrapper>
+  <page>
     <template v-if="serviceStore.state.services.length">
       <div class="flex flex-col gap-4">
-        <TypographyWrapper variant="h1" size="heading-lg">Upcoming Services</TypographyWrapper>
+        <Typography variant="h1" size="heading-lg">Upcoming Services</Typography>
         <Message class="w-fit" size="small" severity="secondary">
           <strong>Note:</strong> only services with active plans are shown below.
         </Message>
@@ -40,8 +40,8 @@ v-for="plan in service.plans" :key="plan._id" :label="plan.title" severity="prim
       </div>
     </template>
     <div v-else>
-      <TypographyWrapper variant="h3" size="heading-md">Loading services...</TypographyWrapper>
+      <Typography variant="h3" size="heading-md">Loading services...</Typography>
       <ProgressSpinner />
     </div>
-  </PageWrapper>
+  </page>
 </template>

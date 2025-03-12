@@ -1,19 +1,12 @@
 <script setup lang="ts">
 import { useStorage, type RemovableRef } from "@vueuse/core";
 import { login } from "@/utils/login";
-import TypographyWrapper from "~/components/TypographyWrapper.vue";
 
 const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 const username: Ref<string> = ref<string>("");
 const password: Ref<string> = ref<string>("");
 const error: Ref<string> = ref("");
 const pending: Ref<boolean> = ref(false);
-
-onBeforeMount(() => {
-  if (isAuthenticated()) {
-    navigateTo({ path: "/" });
-  }
-});
 
 const useLogin = async (): Promise<void> => {
   pending.value = true;
@@ -22,7 +15,7 @@ const useLogin = async (): Promise<void> => {
     const response = await login(username.value, password.value);
     if (response.token) {
       user.value = response;
-      navigateTo({ path: "/" });
+      reloadNuxtApp({path: "/" });
     }
     else {
       error.value = response.message;
@@ -42,16 +35,14 @@ const useLogin = async (): Promise<void> => {
 </script>
 
 <template>
-  <PageWrapper class="pt-12">
-    <TypographyWrapper variant="h1" size="heading-lg">Welcome to Fluro Sheet Music Viewer</TypographyWrapper>
+  <page class="pt-12">
+    <Typography variant="h1" size="heading-lg">Welcome to Fluro Sheet Music Viewer</Typography>
     <Card class="w-fit p-4 mt-6">
       <template #title>
-        <TypographyWrapper variant="h2" size="heading-md">
+        <typography variant="h2" size="heading-md">
           Please login to continue
-        </TypographyWrapper>
-        <TypographyWrapper variant="p" size="text">
-          <small>Login using your Fluro account details.</small>
-        </TypographyWrapper>
+        </typography>
+        <typography variant="p" size="text"><small>Login using your Fluro account details.</small></typography>
       </template>
       <template #content>
         <div class="flex flex-col gap-4">
@@ -77,5 +68,5 @@ const useLogin = async (): Promise<void> => {
     <AbsoluteFooter>
       Made with ❤️ by <a href="https://bevankay.me" target="_blank">Bevan Kay</a>
     </AbsoluteFooter>
-  </PageWrapper>
+  </page>
 </template>

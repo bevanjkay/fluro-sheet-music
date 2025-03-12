@@ -34,7 +34,6 @@ export const refresh = async (refreshToken: string) => {
 };
 
 export const getUserSession = async (user: User) => {
-
   try {
     const response = await fetch("https://api.fluro.io/session", {
       method: "GET",
@@ -43,14 +42,8 @@ export const getUserSession = async (user: User) => {
         "Authorization": `Bearer ${user.token}`,
       },
     });
-
     const data = await response.json();
-
-    if (data.ok) {
-      return data;
-    } else {
-      throw new Error(data.message);
-    }
+    return data;
   }
   catch (e) {
     console.error("Error fetching user session", e);

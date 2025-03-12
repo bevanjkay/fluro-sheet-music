@@ -9,16 +9,16 @@ function isAuthenticated(): boolean {
 }
 
 export default defineNuxtRouteMiddleware((to): string | undefined => {
-  if (to.path == "/login") {
-    if (isAuthenticated() == true) {
-      return "/";
-    }
-    return;
-  }
+  // if (to.path == "/login") {
+  //   if (isAuthenticated() == true) {
+  //     return "/";
+  //   }
+  //   return;
+  // }
 
-  if (isAuthenticated() === false) {
-    return "/login";
-  }
+  // if (isAuthenticated() === false) {
+  //   return "/login";
+  // }
 
   return;
 });

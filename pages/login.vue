@@ -15,8 +15,7 @@ const useLogin = async (): Promise<void> => {
     const response = await login(username.value, password.value);
     if (response.token) {
       user.value = response;
-      navigateTo("/");
-      reloadNuxtApp();
+      reloadNuxtApp({path: "/" });
     }
     else {
       error.value = response.message;

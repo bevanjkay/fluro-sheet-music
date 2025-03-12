@@ -29,7 +29,12 @@ onBeforeMount(async () => {
         token: "",
         refreshToken: "",
       };
+    };
+
+    if (isAuthenticated()) {
+      return;
     }
+    navigateTo("/login");
   }
 });
 

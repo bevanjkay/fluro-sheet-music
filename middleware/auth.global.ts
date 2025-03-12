@@ -1,6 +1,6 @@
 import { useStorage } from "@vueuse/core";
 
-function isAuthenticated(): boolean {
+export function isAuthenticated(): boolean {
   const user: Ref<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
   if (user.value.token) {
     return true;
@@ -8,7 +8,7 @@ function isAuthenticated(): boolean {
   return false;
 }
 
-export default defineNuxtRouteMiddleware((to): string | undefined => {
+export default defineNuxtRouteMiddleware((): string | undefined => {
   // if (to.path == "/login") {
   //   if (isAuthenticated() == true) {
   //     return "/";

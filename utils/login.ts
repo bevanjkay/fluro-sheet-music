@@ -53,7 +53,7 @@ export const getUserSession = async (user: User) => {
     }
   }
   catch (e) {
-    console.error("Error fetching user session");
+    console.error("Error fetching user session", e);
     throw e;
   }
 };

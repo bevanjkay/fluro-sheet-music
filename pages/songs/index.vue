@@ -20,7 +20,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <page>
+  <PageWrapper>
     <FloatLabel
       variant="in"
       style="margin-bottom: 2rem;"
@@ -40,10 +40,10 @@ useSeoMeta({
       class="card"
     >
       <template #title>
-        <Typography variant="h3" size="heading-md">
+        <TypographyWrapper variant="h3" size="heading-md">
           {{ song.title }}
-        </Typography>
-        <Typography v-if="song.data.firstLine" variant="p" size="text">{{ song.data.firstLine }}</Typography>
+        </TypographyWrapper>
+        <TypographyWrapper v-if="song.data.firstLine" variant="p" size="text">{{ song.data.firstLine }}</TypographyWrapper>
       </template>
       <template #footer>
         <Button
@@ -55,5 +55,5 @@ useSeoMeta({
       </template>
     </Card>
     </div>
-  </page>
+  </PageWrapper>
 </template>

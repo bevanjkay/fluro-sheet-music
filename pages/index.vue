@@ -5,11 +5,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <page>
+  <PageWrapper>
     <div class="mb-8">
-      <typography variant="h1" size="heading-xs" class="font-normal tracking-widest text-xs mb-3">FLURO SHEET MUSIC VIEWER</typography>
-      <typography variant="p" size="heading-xl">Welcome {{ props.user.firstName }}.</typography>
-      <typography variant="h3" size="heading-sm font-normal">What would you like to do today?</typography>
+      <TypographyWrapper variant="h1" size="heading-xs" class="font-normal tracking-widest text-xs mb-3">FLURO SHEET MUSIC VIEWER</TypographyWrapper>
+      <TypographyWrapper variant="p" size="heading-xl">Welcome {{ props.user.firstName }}.</TypographyWrapper>
+      <TypographyWrapper variant="h3" size="heading-sm font-normal">What would you like to do today?</TypographyWrapper>
     </div>
     <div class="flex gap-8" style="width: clamp(200px, 95vw, 960px)">
       <Card class="flex-grow">
@@ -48,5 +48,5 @@ const props = defineProps<{
     <AbsoluteFooter>
       Made with ❤️ by <a href="https://bevankay.me" target="_blank">Bevan Kay</a>
     </AbsoluteFooter>
-  </page>
+  </PageWrapper>
 </template>

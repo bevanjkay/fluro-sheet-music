@@ -1,6 +1,6 @@
 import { useStorage } from "@vueuse/core";
 
-const user = useStorage("_fluro_user", { token: null }).value;
+const user = useStorage("_fluro_user", { token: null });
 const base = "https://api.fluro.io";
 let url;
 
@@ -20,7 +20,7 @@ export const useFluroData = (contentType: string, id?: string | Array<string>, q
 
   const headers = {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${user.token}`,
+    "Authorization": `Bearer ${user.value.token}`,
   };
 
   return useLazyFetch(url as string, { headers, query });
@@ -42,7 +42,7 @@ export const useAsyncFluroData = async (contentType: string, id?: string | Array
 
   const headers = {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${user.token}`,
+    "Authorization": `Bearer ${user.value.token}`,
   };
   const data = await useFetch(url, { headers, query });
   return data;

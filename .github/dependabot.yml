@@ -12,7 +12,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      groups:
+    groups:
       gh-actions:
         patterns: 
           - "*"

@@ -21,6 +21,11 @@ const useLogin = async (): Promise<void> => {
     const response = await login(username.value, password.value);
     if (response.token) {
       user.value = response;
+
+      songStore.clearCache();
+      sheetStore.clearCache();
+      songStore.getSongs();
+      sheetStore.getSheets();
       navigateTo({ path: "/", replace: true });
     }
     else {

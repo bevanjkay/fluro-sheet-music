@@ -1,6 +1,6 @@
 import { useStorage } from "@vueuse/core";
 
-const user = useStorage("_fluro_user", { token: null }).value;
+const user = useStorage("_fluro_user", { token: null });
 const base = "https://api.fluro.io";
 let url;
 

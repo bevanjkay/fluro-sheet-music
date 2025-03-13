@@ -24,8 +24,8 @@ const useLogin = async (): Promise<void> => {
 
       songStore.clearCache();
       sheetStore.clearCache();
-      songStore.getSongs();
-      sheetStore.getSheets();
+      await songStore.getSongs();
+      await sheetStore.getSheets();
       navigateTo({ path: "/", replace: true });
     }
     else {

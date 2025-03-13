@@ -20,12 +20,15 @@ const useLogin = async (): Promise<void> => {
   try {
     const response = await login(username.value, password.value);
     if (response.token) {
-      user.value = response;
+      user.value.token = response.token;
+      user.value.refreshToken = response.refreshToken;
 
-      songStore.clearCache();
-      sheetStore.clearCache();
-      await songStore.getSongs();
-      await sheetStore.getSheets();
+      await Promise.all([
+        songStore.clearCache(),
+        sheetStore.clearCache(),
+        songStore.getSongs(),
+        sheetStore.getSheets()
+      ]);
       navigateTo({ path: "/", replace: true });
     }
     else {

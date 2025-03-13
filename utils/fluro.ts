@@ -1,12 +1,13 @@
-import { useStorage } from "@vueuse/core";
+import { useStorage, type RemovableRef } from "@vueuse/core";
 
-const user = useStorage("_fluro_user", { token: "", refreshToken: "" });
+const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 const base = "https://api.fluro.io";
 let url;
 
 export const useFluroData = (contentType: string, id?: string | Array<string>, query?: object) => {
   if (!user.value.token) {
-    throw new Error("User not logged in");
+    console.error(`Error fetching ${contentType}, user not logged in`);
+    return { data: [], error: "User not logged in" };
   }
   if (!id) {
     url = `${base}/content/${contentType}`;
@@ -31,7 +32,8 @@ export const useFluroData = (contentType: string, id?: string | Array<string>, q
 
 export const useAsyncFluroData = async (contentType: string, id?: string | Array<string> | null, query?: object) => {
   if (!user.value.token) {
-    throw new Error("User not logged in");
+    console.error(`Error fetching ${contentType}, user not logged in`);
+    return { data: [], error: "User not logged in" };
   }
   if (!id) {
     url = `${base}/content/${contentType}`;

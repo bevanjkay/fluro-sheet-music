@@ -1,6 +1,6 @@
 import { useStorage } from "@vueuse/core";
 
-const user = useStorage("_fluro_user", { token: "", refreshToken: "" });
+const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 const base = "https://api.fluro.io";
 let url;
 

@@ -91,12 +91,12 @@ onBeforeUnmount(() => {
 <template>
   <div>
     <div class="pdf">
-      <Swiper
+      <swiper-container
         v-if="songStore.state.planSongs && songStore.state.planSongs.length"
         :direction="vertical ? 'vertical' : 'horizontal'"
       >
         <template v-for="song in populatedSongs">
-          <SwiperSlide
+          <swiper-slide
             v-for="page in findPages(song)"
             :key="song._id + page"
           >
@@ -111,9 +111,9 @@ onBeforeUnmount(() => {
               :song="song._id"
               @data="handleData"
             />
-          </SwiperSlide>
+          </swiper-slide>
         </template>
-      </Swiper>
+      </swiper-container>
       <div v-else class="p-12 relative min-h-dvh pt-24">
         <h2>No songs in this plan.</h2>
         <div

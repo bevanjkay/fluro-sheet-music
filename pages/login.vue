@@ -26,6 +26,7 @@ const useLogin = async (): Promise<void> => {
       user.value.token = response.token;
       user.value.refreshToken = response.refreshToken;
 
+      await getUserSession(user.value);
       await Promise.all([
         songStore.clearCache(),
         sheetStore.clearCache(),

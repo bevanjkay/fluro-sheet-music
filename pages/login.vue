@@ -8,6 +8,9 @@ const password: Ref<string> = ref<string>("");
 const error: Ref<string> = ref("");
 const pending: Ref<boolean> = ref(false);
 
+const songStore = useSongStore();
+const sheetStore = useSheetStore();
+
 onBeforeMount(() => {
   if (isAuthenticated()) {
     navigateTo({ path: "/", replace: true });
@@ -21,6 +24,11 @@ const useLogin = async (): Promise<void> => {
     const response = await login(username.value, password.value);
     if (response.token) {
       user.value = response;
+
+      songStore.clearCache();
+      sheetStore.clearCache();
+      songStore.getSongs();
+      sheetStore.getSheets();
       navigateTo({ path: "/", replace: true });
     }
     else {

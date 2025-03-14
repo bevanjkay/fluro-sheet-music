@@ -1,7 +1,7 @@
-import { useStorage, type RemovableRef } from "@vueuse/core";
+import { useStorage } from "@vueuse/core";
 
 export function isAuthenticated(): boolean {
-  const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
+  const user: Ref<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
   if (user.value.token) {
     return true;
   }

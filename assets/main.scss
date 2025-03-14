@@ -23,3 +23,16 @@ canvas {
     filter: invert(0.9) grayscale(0.9);
   }
 }
+
+
+.image-w-placeholder {
+  img {
+    aspect-ratio: 16/9;
+    width: 100%;
+    background: #eee;
+  }
+}
+
+.p-card {
+  overflow: hidden;
+}

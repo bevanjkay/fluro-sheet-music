@@ -14,6 +14,9 @@ onBeforeMount(() => {
   }
 });
 
+const songStore = useSongStore();
+const sheetStore = useSheetStore();
+
 const useLogin = async (): Promise<void> => {
   pending.value = true;
 

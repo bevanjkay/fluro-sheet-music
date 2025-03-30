@@ -1,47 +1,14 @@
 <script lang="ts" setup>
 import { useStorage } from "@vueuse/core";
-import { getUserSession, refresh } from "./utils/login";
 import GlobalDialog from "@/components/GlobalDialog.vue";
 
 const user: Ref<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 const loading: Ref<boolean> = ref(true);
 const darkMode: Ref<boolean> = useStorage("darkMode", false);
 
-  useSeoMeta({
+useSeoMeta({
   title: "Fluro Sheet Music Viewer",
   ogTitle: "Fluro Sheet Music Viewer",
-});
-
-onBeforeMount(async () => {
-  if (!user.value || !user.value.token) {
-    navigateTo("/login");
-    return;
-  };
-
-  try {
-    const response = await getUserSession(user.value);
-    console.log(response);
-  } catch {
-    try {
-      if (!user.value.refreshToken) {
-        throw new Error("No refresh token");
-      }
-      console.info("Refreshing token", user.value.refreshToken);
-      const response = await refresh(user.value.refreshToken);
-      user.value.token = response.token;
-    }
-    catch {
-      user.value = {
-        token: "",
-        refreshToken: "",
-      };
-    };
-
-    if (isAuthenticated()) {
-      return;
-    }
-    navigateTo("/login");
-  }
 });
 
 const songStore = useSongStore();

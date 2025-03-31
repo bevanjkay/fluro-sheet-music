@@ -104,7 +104,7 @@ onBeforeUnmount(() => {
             <h1>{{ song.title }}</h1>
             <h3 style="color: darkred">No sheet music for this song.</h3>
           </div>
-            <PdfRender
+          <PdfRender
               v-if="song.selectedSheet && song.sheetMusic?.length"
               :page="page"
               :source="createURL(song.selectedSheet)"

@@ -20,13 +20,14 @@
     "@primevue/forms": "^4.3.2",
     "@primevue/nuxt-module": "^4.3.2",
     "@primevue/themes": "^4.3.2",
+    "@tato30/vue-pdf": "^1.11.3",
     "@vueuse/core": "^13.0.0",
     "nuxt": "^3.16.1",
     "nuxt-swiper": "^2.0.0",
+    "pdfjs-dist": "^5.1.91",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.1",
     "vue": "latest",
-    "vue-pdf-embed": "^2.1.2",
     "vue-router": "latest"
   },
   "devDependencies": {

@@ -54,6 +54,7 @@ const useLogin = async (): Promise<void> => {
 
 <template>
   <page class="pt-12">
+    <LegacyWarning />
     <Typography variant="h1" size="heading-lg">Welcome to Fluro Sheet Music Viewer</Typography>
     <Card class="w-fit p-4 mt-6">
       <template #title>
@@ -86,5 +87,5 @@ const useLogin = async (): Promise<void> => {
     <AbsoluteFooter>
       Made with ❤️ by <a href="https://bevankay.me" target="_blank">Bevan Kay</a>
     </AbsoluteFooter>
-  </page>
+</page>
 </template>

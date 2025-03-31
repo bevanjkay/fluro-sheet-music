@@ -118,6 +118,6 @@ watch(darkMode, (value) => {
       <Typography variant="h3" size="heading-md">Loading data...</Typography>
       <ProgressSpinner />
     </page>
-    <NuxtPage v-if="!loading" :user="user" />
+    <NuxtPage v-if="!loading" />
   </div>
 </template>

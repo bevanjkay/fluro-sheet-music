@@ -60,6 +60,13 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
   ],
   ssr: false,
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => {
+        return ["swiper-slide", "swiper-container"].includes(tag);
+      }
+    }
+  },
   app: {
     head: {
       link: [

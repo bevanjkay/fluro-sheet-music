@@ -48,7 +48,7 @@ useSeoMeta({
       <template #footer>
         <Button
           severity="secondary"
-          @click="navigateTo(`/songs/${song._id}`)"
+          @click.stop="navigateTo({ path: `/songs/${song._id}` })"
         >
           View Song
         </Button>

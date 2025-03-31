@@ -58,6 +58,7 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@nuxtjs/tailwindcss",
     "@nuxt/fonts",
+    "@nuxtjs/device",
   ],
   ssr: false,
   vue: {

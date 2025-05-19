@@ -13,8 +13,8 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/eslint": "^1.3.1",
-    "@nuxt/fonts": "^0.11.3",
+    "@nuxt/eslint": "^1.4.0",
+    "@nuxt/fonts": "^0.11.4",
     "@nuxtjs/device": "^3.2.4",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@pinia/nuxt": "^0.11.0",
@@ -22,8 +22,8 @@
     "@primevue/nuxt-module": "^4.3.4",
     "@primevue/themes": "^4.3.4",
     "@tato30/vue-pdf": "^1.11.3",
-    "@vueuse/core": "^13.1.0",
-    "nuxt": "^3.17.2",
+    "@vueuse/core": "^13.2.0",
+    "nuxt": "^3.17.3",
     "nuxt-swiper": "^2.0.1",
     "pdfjs-dist": "^5.2.133",
     "primeicons": "^7.0.0",
@@ -36,9 +36,9 @@
     "@nuxt/types": "^2.18.1",
     "@nuxt/typescript-build": "^3.0.2",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
-    "eslint": "^9.26.0",
+    "eslint": "^9.27.0",
     "eslint-plugin-vue": "^10.1.0",
-    "sass-embedded": "^1.88.0",
+    "sass-embedded": "^1.89.0",
     "vue-eslint-parser": "^10.1.3",
     "vue-tsc": "^2.2.10"
   }

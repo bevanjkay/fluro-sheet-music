@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { useStorage, type RemovableRef } from "@vueuse/core";
+import { useStorage  } from "@vueuse/core";
+import type {RemovableRef} from "@vueuse/core";
 import { VuePDF, usePDF } from "@tato30/vue-pdf";
 
 const props = defineProps({

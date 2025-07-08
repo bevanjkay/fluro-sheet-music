@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useStorage, type RemovableRef } from "@vueuse/core";
+import { useStorage  } from "@vueuse/core";
+import type {RemovableRef} from "@vueuse/core";
 import { login } from "@/utils/login";
 
 const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });

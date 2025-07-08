@@ -1,4 +1,5 @@
-import { useStorage, type RemovableRef } from "@vueuse/core";
+import { useStorage  } from "@vueuse/core";
+import type {RemovableRef} from "@vueuse/core";
 
 const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 const base = "https://api.fluro.io";

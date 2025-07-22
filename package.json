@@ -13,11 +13,11 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/eslint": "^1.5.2",
+    "@nuxt/eslint": "^1.6.0",
     "@nuxt/fonts": "^0.11.4",
     "@nuxtjs/device": "^3.2.4",
     "@nuxtjs/tailwindcss": "^6.14.0",
-    "@pinia/nuxt": "^0.11.1",
+    "@pinia/nuxt": "^0.11.2",
     "@primevue/forms": "^4.3.6",
     "@primevue/nuxt-module": "^4.3.6",
     "@primevue/themes": "^4.3.6",
@@ -40,6 +40,6 @@
     "eslint-plugin-vue": "^10.2.0",
     "sass-embedded": "^1.89.2",
     "vue-eslint-parser": "^10.1.4",
-    "vue-tsc": "^3.0.1"
+    "vue-tsc": "^3.0.3"
   }
 }

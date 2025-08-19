@@ -3,14 +3,14 @@ const { userAgent } = useDevice();
 
 const legacyBrowser = computed(() => {
   // Check for older Safari versions (11-15)
-  const isOlderSafari = /Safari/.test(userAgent) && /Version\/(15|14|13|12|11)\.\d+\.\d+/.test(userAgent);
+  const isOlderSafari = /Safari/.test(userAgent) && /Version\/(15|14|13|12|11)\./.test(userAgent);
   
   // Check for older iPad devices that may have issues with modern PDF.js
   const isOlderIpad = /iPad/.test(userAgent) && (
     // iPad with iOS 12 or earlier (Safari 12 and below)
     /OS (12|11|10|9)_/.test(userAgent) ||
     // iPad with older Safari versions regardless of iOS version
-    /Version\/(12|11|10|9)\.\d+/.test(userAgent)
+    /Version\/(12|11|10|9)\./.test(userAgent)
   );
   
   // Check for devices without WebAssembly support (required for modern PDF.js)

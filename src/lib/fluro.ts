@@ -28,7 +28,7 @@ export const fetchFluroData = async (
   }
 
   // Use query string authentication for sheet content types
-  const useQueryAuth = contentType === "sheet";
+  const useQueryAuth = contentType === "sheet" || contentType === "sheetMusic";
   
   if (useQueryAuth) {
     // Add access_token to query params

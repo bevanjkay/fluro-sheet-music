@@ -28,7 +28,7 @@ export default function PlanPage() {
 
   useEffect(() => {
     const loadPlan = async () => {
-      if (!isAuthenticated || !id) return;
+      if (!isAuthenticated || !id || !user.token) return;
       
       try {
         setIsLoadingPlan(true);
@@ -52,7 +52,7 @@ export default function PlanPage() {
     };
 
     loadPlan();
-  }, [isAuthenticated, id, user, loadSongs, loadSheets, setPlanSongs]);
+  }, [isAuthenticated, id, user.token]); // Only depend on specific user properties that matter
 
   if (isLoading || !isAuthenticated) {
     return null;

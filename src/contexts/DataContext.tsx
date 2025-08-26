@@ -68,7 +68,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     
     setIsLoadingSheets(true);
     try {
-      const data = await fetchFluroData("sheet", user);
+      const data = await fetchFluroData("sheetMusic", user);
       setSheets(data);
       setSheetsExpiry(Date.now() + 5 * 60 * 1000); // 5 minutes cache
     } catch (error) {

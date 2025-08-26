@@ -8,7 +8,7 @@ import { fetchFluroData } from "@/lib/fluro";
 import { Plan, PlanSong } from "@/types";
 import { formatDate } from "@/lib/helpers";
 import Navigation from "@/components/Navigation";
-import PdfWrapper from "@/components/PdfWrapper";
+import SwipeablePdfViewer from "@/components/SwipeablePdfViewer";
 
 export default function PlanPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -99,7 +99,7 @@ export default function PlanPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      <PdfWrapper songs={populatedSongs} />
+      <SwipeablePdfViewer songs={populatedSongs} />
     </div>
   );
 }

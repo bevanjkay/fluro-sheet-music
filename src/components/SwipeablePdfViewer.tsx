@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Keyboard, Virtual } from "swiper/modules";
+import { Navigation, Keyboard } from "swiper/modules";
 import { useAuth } from "@/contexts/AuthContext";
 import PdfRender from "./PdfRender";
 import { PopulatedSong, Sheet } from "@/types";
@@ -12,7 +12,6 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/virtual";
 
 interface SwipeablePdfViewerProps {
   songs: PopulatedSong[];
@@ -25,6 +24,13 @@ interface PdfPage {
   sheetUrl: string;
   songIndex: number;
   totalPagesInSong: number;
+  pdfData?: ArrayBuffer; // Cache the actual PDF data
+}
+
+interface CachedPdf {
+  url: string;
+  data: ArrayBuffer;
+  numPages: number;
 }
 
 export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
@@ -34,6 +40,7 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
   const [isPreloading, setIsPreloading] = useState(true);
   const [preloadProgress, setPreloadProgress] = useState(0);
   const [songPages, setSongPages] = useState<Record<string, number>>({});
+  const [cachedPdfs, setCachedPdfs] = useState<Record<string, CachedPdf>>({});
   const [keySelection] = useLocalStorage<Record<string, string | undefined>>("keys", {});
   const swiperRef = useRef<any>(null);
 
@@ -41,27 +48,88 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
     return `https://api.fluro.io/get/${sheet._id}?access_token=${user.token}`;
   };
 
-  const handlePdfData = (data: { id: string; numPages: number }) => {
-    setSongPages(prev => {
-      const updated = {
-        ...prev,
-        [data.id]: data.numPages
-      };
-      
-      // Check if we have page counts for all songs to build the pages array
-      const allSongsHavePageCount = songs.every(song => updated[song._id]);
-      if (allSongsHavePageCount) {
-        buildAllPages(updated);
+  // Preload and cache a PDF
+  const preloadPdf = async (url: string): Promise<CachedPdf> => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch PDF: ${response.status}`);
       }
       
-      return updated;
-    });
+      const arrayBuffer = await response.arrayBuffer();
+      
+      // Load the PDF to get page count
+      const { getDocument } = await import("pdfjs-dist");
+      const pdf = await getDocument(arrayBuffer).promise;
+      const numPages = pdf.numPages;
+      
+      return {
+        url,
+        data: arrayBuffer,
+        numPages
+      };
+    } catch (error) {
+      console.error("Error preloading PDF:", error);
+      throw error;
+    }
   };
 
-  const buildAllPages = (pageData: Record<string, number>) => {
+  // Preload all PDFs
+  const preloadAllPdfs = async () => {
+    if (songs.length === 0) return;
+    
+    setIsPreloading(true);
+    setPreloadProgress(0);
+    
+    const pdfPromises: Promise<{ songId: string; cached: CachedPdf }>[] = [];
+    const songPageData: Record<string, number> = {};
+    
+    // Create promises for all unique PDF URLs
+    songs.forEach((song) => {
+      const selectedKey = keySelection[song._id];
+      const selectedSheet = selectedKey 
+        ? song.data.sheetMusic?.find(sheet => sheet.data?.key === selectedKey)
+        : song.data.sheetMusic?.[0];
+
+      if (selectedSheet) {
+        const url = createURL(selectedSheet);
+        pdfPromises.push(
+          preloadPdf(url).then(cached => ({ songId: song._id, cached }))
+        );
+      }
+    });
+    
+    try {
+      // Load all PDFs with progress tracking
+      const results = await Promise.allSettled(pdfPromises);
+      const cached: Record<string, CachedPdf> = {};
+      let completedCount = 0;
+      
+      results.forEach((result, index) => {
+        completedCount++;
+        setPreloadProgress((completedCount / results.length) * 100);
+        
+        if (result.status === "fulfilled") {
+          const { songId, cached: pdfCache } = result.value;
+          cached[songId] = pdfCache;
+          songPageData[songId] = pdfCache.numPages;
+        } else {
+          console.error("Failed to preload PDF:", result.reason);
+        }
+      });
+      
+      setCachedPdfs(cached);
+      setSongPages(songPageData);
+      buildAllPages(songPageData, cached);
+      
+    } catch (error) {
+      console.error("Error during PDF preloading:", error);
+      setIsPreloading(false);
+    }
+  };
+
+  const buildAllPages = (pageData: Record<string, number>, cached: Record<string, CachedPdf>) => {
     const pages: PdfPage[] = [];
-    let preloadCount = 0;
-    const totalSongs = songs.length;
 
     songs.forEach((song, songIndex) => {
       const selectedKey = keySelection[song._id];
@@ -71,33 +139,34 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
 
       if (selectedSheet) {
         const numPages = pageData[song._id] || 1;
+        const url = createURL(selectedSheet);
+        const pdfData = cached[song._id]?.data;
+        
         for (let pageNum = 1; pageNum <= numPages; pageNum++) {
           pages.push({
             songId: song._id,
             songTitle: song.title,
             pageNumber: pageNum,
-            sheetUrl: createURL(selectedSheet),
+            sheetUrl: url,
             songIndex,
             totalPagesInSong: numPages,
+            pdfData: pdfData
           });
         }
       }
-      
-      preloadCount++;
-      setPreloadProgress((preloadCount / totalSongs) * 100);
     });
 
     setAllPages(pages);
     setIsPreloading(false);
   };
 
-  // Preload all PDFs to get page counts
+  // Preload all PDFs when songs change
   useEffect(() => {
     if (songs.length > 0) {
-      setIsPreloading(true);
-      setPreloadProgress(0);
+      preloadAllPdfs();
     }
-  }, [songs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [songs, keySelection]);
 
   const jumpToNextSong = useCallback(() => {
     if (!swiperRef.current || allPages.length === 0) return;
@@ -186,7 +255,7 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <h3 className="text-lg font-medium mb-2">Preloading sheet music...</h3>
           <p className="text-gray-600 mb-4">
-            Preparing all PDFs for immediate access during your performance.
+            Downloading all PDFs for offline access during your performance.
           </p>
           <div className="w-64 bg-gray-200 rounded-full h-2 mx-auto mb-2">
             <div 
@@ -195,28 +264,6 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
             ></div>
           </div>
           <p className="text-sm text-gray-500">{Math.round(preloadProgress)}% complete</p>
-          
-          {/* Hidden PDF renders for preloading */}
-          <div className="hidden">
-            {songs.map((song) => {
-              const selectedKey = keySelection[song._id];
-              const selectedSheet = selectedKey 
-                ? song.data.sheetMusic?.find(sheet => sheet.data?.key === selectedKey)
-                : song.data.sheetMusic?.[0];
-
-              if (!selectedSheet) return null;
-
-              return (
-                <PdfRender
-                  key={song._id}
-                  source={createURL(selectedSheet)}
-                  page={1}
-                  song={song._id}
-                  onData={handlePdfData}
-                />
-              );
-            })}
-          </div>
         </div>
       </div>
     );
@@ -315,17 +362,13 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
           onSlideChange={(swiper) => {
             setCurrentSlide(swiper.activeIndex);
           }}
-          modules={[Navigation, Keyboard, Virtual]}
+          modules={[Navigation, Keyboard]}
           spaceBetween={20}
           slidesPerView={1}
           centeredSlides={true}
           keyboard={{
             enabled: true,
             onlyInViewport: true,
-          }}
-          virtual={{
-            enabled: true,
-            slides: allPages,
           }}
           navigation={{
             nextEl: ".swiper-button-next",
@@ -338,13 +381,12 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
           }}
         >
           {allPages.map((page, index) => (
-            <SwiperSlide key={`${page.songId}-${page.pageNumber}`} virtualIndex={index}>
+            <SwiperSlide key={`${page.songId}-${page.pageNumber}`}>
               <div className="flex justify-center items-start h-full">
                 <PdfRender
-                  source={page.sheetUrl}
+                  source={page.pdfData || page.sheetUrl}
                   page={page.pageNumber}
                   song={page.songId}
-                  onData={handlePdfData}
                 />
               </div>
             </SwiperSlide>
@@ -363,7 +405,8 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
             <span className="font-medium">Swipe</span> or use <span className="font-medium">arrow keys</span> to navigate • 
             <span className="font-medium"> ↑↓</span> for songs • 
             <span className="font-medium"> ←→</span> for pages • 
-            <span className="font-medium"> Space</span> for next page
+            <span className="font-medium"> Space</span> for next page •
+            <span className="font-medium text-green-400"> All PDFs cached offline</span>
           </p>
         </div>
       </div>

@@ -9,7 +9,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 interface PdfRenderProps {
-  source: string;
+  source: string | ArrayBuffer;
   page?: number;
   song: string;
   onData?: (data: { id: string; numPages: number }) => void;

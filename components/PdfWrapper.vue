@@ -73,10 +73,10 @@ const songPages: Ref<Record<string, number>> = ref({});
 const findPages = (song: PopulatedSong) => {
   songLoaded.value[song._id] = true;
 
-  // First, try to get cached page count from our new PDF utility
+  // First, try to get cached page count from our PDF utility
   if (song.selectedSheet) {
     const cachedPageCount = getCachedPdfPageCount(song.selectedSheet._id);
-    if (cachedPageCount !== null) {
+    if (cachedPageCount !== null && cachedPageCount > 0) {
       const output = [];
       for (let i = 1; i <= cachedPageCount; i++) {
         output.push(i);
@@ -88,7 +88,7 @@ const findPages = (song: PopulatedSong) => {
   }
 
   // Fallback to legacy behavior: check if we have page count from PdfRender emission
-  if (songPages.value[song._id]) {
+  if (songPages.value[song._id] && songPages.value[song._id] > 0) {
     const output = [];
     const count = songPages.value[song._id];
     for (let i = 1; i <= count; i++) {

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { useStorage  } from "@vueuse/core";
+import { useStorage } from "@vueuse/core";
 import type {RemovableRef} from "@vueuse/core";
 import { VuePDF, usePDF } from "@tato30/vue-pdf";
+import { cachePdfPageCount } from "~/utils/pdf";
 
 const props = defineProps({
   source: {
@@ -43,6 +44,14 @@ watch(pages, (newPages: number) => {
     emit("data", { id: props.song, numPages: newPages });
     hasEmittedData.value = true;
     lastEmittedSong.value = props.song;
+    
+    // Cache the page count for future use
+    // We need to extract the sheet ID from the source URL to cache it properly
+    const match = props.source.match(/\/get\/([a-f0-9]{24})/);
+    if (match) {
+      const sheetId = match[1];
+      cachePdfPageCount(sheetId, newPages);
+    }
   }
 });
 

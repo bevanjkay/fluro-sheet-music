@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef, useCallback } from "react";
 import { User } from "@/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { getUserSession, refresh } from "@/lib/auth";
@@ -20,47 +20,59 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useLocalStorage<User>("_fluro_user", { token: "", refreshToken: "" });
   const [isLoading, setIsLoading] = useState(true);
+  const initializedToken = useRef<string>("");
 
   const login = (userData: User) => {
     setUser(userData);
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser({ token: "", refreshToken: "" });
-  };
+    setIsLoading(false);
+    initializedToken.current = "";
+  }, [setUser]);
 
-  const checkAuth = useCallback(async () => {
-    if (!user.token) {
-      setIsLoading(false);
-      return;
+  // Check authentication only when token actually changes
+  useEffect(() => {
+    if (initializedToken.current === user.token) {
+      return; // Skip if token hasn't changed
     }
 
-    try {
-      const response = await getUserSession(user);
-      if (response.error && user.refreshToken) {
-        try {
-          const refreshResponse = await refresh(user.refreshToken);
-          if (refreshResponse.token) {
-            setUser({ ...user, token: refreshResponse.token });
-          } else {
+    initializedToken.current = user.token;
+
+    const checkAuth = async () => {
+      if (!user.token) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await getUserSession(user);
+        if (response.error && user.refreshToken) {
+          try {
+            const refreshResponse = await refresh(user.refreshToken);
+            if (refreshResponse.token) {
+              // Update token
+              setUser({ ...user, token: refreshResponse.token });
+            } else {
+              logout();
+            }
+          } catch (refreshError) {
+            console.error("Error refreshing token", refreshError);
             logout();
           }
-        } catch (refreshError) {
-          console.error("Error refreshing token", refreshError);
-          logout();
         }
+      } catch (sessionError) {
+        console.error("Error fetching user session", sessionError);
+        logout();
+      } finally {
+        setIsLoading(false);
       }
-    } catch (sessionError) {
-      console.error("Error fetching user session", sessionError);
-      logout();
-    }
-    
-    setIsLoading(false);
-  }, [user, setUser]);
+    };
 
-  useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.token, user.refreshToken]); // Don't include user object to avoid infinite loop
 
   const value = {
     user,

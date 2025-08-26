@@ -6,7 +6,7 @@ export const fetchFluroData = async (
   contentType: string, 
   user: User,
   id?: string | Array<string>,
-  query?: object
+  query?: Record<string, string>
 ) => {
   if (!user.token) {
     console.error(`Error fetching ${contentType}, user not logged in`);

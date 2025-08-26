@@ -1,75 +1,123 @@
-# Nuxt Minimal Starter
+# Fluro Sheet Music Viewer
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A React/Next.js application that provides a sheet music viewer for the Fluro church management system. This application allows users to authenticate with their Fluro accounts and view sheet music for songs, service plans, and custom setlists.
 
-## Setup
+## 🚀 Migration Complete: Vue.js → React
 
-Make sure to install dependencies:
+This project has been successfully migrated from **Nuxt 3 + Vue.js** to **Next.js + React** with significant improvements:
+
+### Key Improvements
+- **✅ Lightweight PDF Library**: Replaced `@tato30/vue-pdf` with `react-pdf` for better performance
+- **✅ Modern React Architecture**: Using React hooks, Context API, and TypeScript
+- **✅ Next.js App Router**: File-based routing with better performance
+- **✅ Better State Management**: React Context instead of Pinia stores
+- **✅ Improved TypeScript**: Proper exports instead of global declarations
+
+## Technology Stack
+
+- **Framework**: Next.js 15 (React 18)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **PDF Rendering**: react-pdf (lightweight alternative)
+- **State Management**: React Context API
+- **Authentication**: Fluro API integration
+- **Build**: Next.js with static export capabilities
+
+## Features
+
+- 🔐 **Authentication** - Token-based auth with Fluro API
+- 📄 **PDF Sheet Music Viewer** - Lightweight PDF rendering with navigation
+- 📅 **Service Plans** - View and navigate service plans
+- 🎵 **Songs Library** - Browse individual songs with sheet music
+- 📝 **Custom Setlists** - Create and manage custom song collections
+- 📱 **Responsive Design** - Works on mobile and desktop
+- ⌨️ **Keyboard Navigation** - Arrow keys for page/song navigation
+- 💾 **Local Storage** - Persistent user preferences and caching
+
+## Quick Start
 
 ```bash
-# npm
+# Install dependencies
 npm install
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
+# Start development server
 npm run dev
 
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
+# Build for production
 npm run build
 
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+# Lint code
+npm run lint
 ```
 
-Locally preview production build:
+## Development
 
-```bash
-# npm
-npm run preview
+The application runs on `http://localhost:3000` in development mode.
 
-# pnpm
-pnpm preview
+### Project Structure
 
-# yarn
-yarn preview
-
-# bun
-bun run preview
+```
+src/
+├── app/                  # Next.js App Router pages
+│   ├── layout.tsx       # Root layout with providers
+│   ├── page.tsx         # Homepage
+│   ├── login/           # Authentication
+│   ├── plans/           # Service plans
+│   ├── songs/           # Songs library
+│   └── custom/          # Custom setlists
+├── components/          # Reusable React components
+│   ├── ui/             # Basic UI components
+│   ├── Navigation.tsx  # Main navigation
+│   ├── PdfRender.tsx   # PDF viewer component
+│   └── PdfWrapper.tsx  # PDF navigation wrapper
+├── contexts/           # React Context providers
+│   ├── AuthContext.tsx # Authentication state
+│   └── DataContext.tsx # Data management
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions
+└── types/              # TypeScript type definitions
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### Key Components
+
+- **PdfRender**: Lightweight PDF viewer using react-pdf
+- **PdfWrapper**: Navigation controls and multi-song handling
+- **AuthContext**: Authentication state management
+- **DataContext**: Songs, sheets, and services data management
+
+### API Integration
+
+The app integrates with the Fluro API for:
+- User authentication (`/token/login`, `/token/refresh`)
+- Content retrieval (`/content/{type}`)
+- File access (`/get/{id}`)
+
+## Environment
+
+No environment variables are required for basic functionality. The app connects directly to the Fluro API at `https://api.fluro.io`.
+
+## Authentication
+
+Users authenticate with their existing Fluro account credentials. The app supports:
+- Token-based authentication
+- Automatic token refresh
+- Session persistence via local storage
+
+## Migration Notes
+
+This React version maintains full feature parity with the original Vue.js version while providing:
+- Better performance with lighter PDF library
+- Improved code maintainability with modern React patterns
+- Enhanced TypeScript support
+- Cleaner component architecture
+
+## Contributing
+
+1. Follow the existing code style (ESLint configured)
+2. Use TypeScript for all components
+3. Maintain responsive design principles
+4. Test authentication flows thoroughly
+
+## License
+
+Built with ❤️ by [Bevan Kay](https://bevankay.me)

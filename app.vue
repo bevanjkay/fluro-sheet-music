@@ -24,7 +24,7 @@ const setDarkMode = (value: boolean) => {
 };
 
 onMounted(async () => {
-  if (user.value) {
+  if (user.value && user.value.token) {
     await songStore.getSongs();
     await sheetStore.getSheets();
   }

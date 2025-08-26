@@ -21,10 +21,18 @@ export const useSongStore = defineStore("songStore", () => {
 
     try {
       const { data } = await useAsyncFluroData("song", null, { sort: "title" }) as { data: Ref<Song[]> };
-      state.songs = data.value;
+      // Handle case where data might be undefined or not a ref
+      if (data && data.value) {
+        state.songs = data.value;
+      } else {
+        // Handle error case (user not logged in, etc.)
+        console.warn("Failed to load songs: no data returned");
+        state.songs = [];
+      }
     }
     catch (error) {
       console.error("Error fetching songs", error);
+      state.songs = [];
     }
   }
 

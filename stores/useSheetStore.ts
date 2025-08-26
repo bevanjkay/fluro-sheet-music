@@ -18,17 +18,34 @@ export const useSheetStore = defineStore("sheetStore", () => {
         return;
       }
     }
-    const { data } = await useAsyncFluroData("sheetMusic") as { data: Ref<Sheet[]> };
-    state.sheets = data.value;
     
-    // Prefetch page counts for newly loaded sheets
-    prefetchPageCounts();
+    try {
+      const { data } = await useAsyncFluroData("sheetMusic") as { data: Ref<Sheet[]> };
+      // Handle case where data might be undefined or not a ref
+      if (data && data.value) {
+        state.sheets = data.value;
+        // Prefetch page counts for newly loaded sheets
+        prefetchPageCounts();
+      } else {
+        // Handle error case (user not logged in, etc.)
+        console.warn("Failed to load sheets: no data returned");
+        state.sheets = [];
+      }
+    } catch (error) {
+      console.warn("Error loading sheets:", error);
+      state.sheets = [];
+    }
   }
 
   function prefetchPageCounts() {
-    if (state.sheets.length > 0) {
+    if (state.sheets && Array.isArray(state.sheets) && state.sheets.length > 0) {
       // Get user token for authenticated requests
       const user = useStorage("_fluro_user", { token: "", refreshToken: "" });
+      
+      // Only proceed if user has a token
+      if (!user.value.token) {
+        return;
+      }
       
       const sheetsWithUrls = state.sheets.map(sheet => ({
         _id: sheet._id,

@@ -2,8 +2,11 @@ import * as pdfjsLib from "pdfjs-dist";
 import { useStorage } from "@vueuse/core";
 import type { RemovableRef } from "@vueuse/core";
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+// Configure PDF.js worker - use a more robust approach for different environments
+if (typeof window !== "undefined") {
+  // In browser environment
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+}
 
 interface PdfPageCache {
   [sheetId: string]: {
@@ -45,14 +48,19 @@ export async function getPdfPageCount(url: string, sheetId?: string): Promise<nu
       disableStream: true,
     });
 
-    const pdf = await loadingTask.promise;
+    // Add a timeout wrapper since PDF.js doesn't have a built-in timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error("PDF loading timeout")), 10000);
+    });
+
+    const pdf = await Promise.race([loadingTask.promise, timeoutPromise]);
     const numPages = pdf.numPages;
 
     // Cleanup the PDF document to free memory
     pdf.destroy();
 
-    // Cache the result if we have a sheet ID
-    if (sheetId) {
+    // Cache the result if we have a sheet ID and it's a reasonable page count
+    if (sheetId && numPages > 0 && numPages <= 1000) { // Sanity check
       pdfPageCache.value[sheetId] = {
         numPages,
         timestamp: Date.now(),
@@ -61,7 +69,7 @@ export async function getPdfPageCount(url: string, sheetId?: string): Promise<nu
 
     return numPages;
   } catch (error) {
-    console.error("Error getting PDF page count:", error);
+    console.warn(`Error getting PDF page count for ${sheetId || "unknown"}:`, error);
     // Return 1 as fallback to maintain existing behavior
     return 1;
   }

@@ -1,4 +1,5 @@
 import { useStorage } from "@vueuse/core";
+import { prefetchPdfPageCounts, clearPdfPageCache } from "~/utils/pdf";
 
 export const useSheetStore = defineStore("sheetStore", () => {
   const state = reactive({
@@ -12,11 +13,33 @@ export const useSheetStore = defineStore("sheetStore", () => {
     if (persistedSheetsExpiry.value > Date.now()) {
       if (state.sheets.length > 0) {
         state.sheets = persistedSheets.value;
+        // Still prefetch page counts for cached sheets if needed
+        prefetchPageCounts();
         return;
       }
     }
     const { data } = await useAsyncFluroData("sheetMusic") as { data: Ref<Sheet[]> };
     state.sheets = data.value;
+    
+    // Prefetch page counts for newly loaded sheets
+    prefetchPageCounts();
+  }
+
+  function prefetchPageCounts() {
+    if (state.sheets.length > 0) {
+      // Get user token for authenticated requests
+      const user = useStorage("_fluro_user", { token: "", refreshToken: "" });
+      
+      const sheetsWithUrls = state.sheets.map(sheet => ({
+        _id: sheet._id,
+        url: `https://api.fluro.io/get/${sheet._id}?access_token=${user.value.token}`
+      }));
+      
+      // Prefetch in background without blocking
+      prefetchPdfPageCounts(sheetsWithUrls).catch(error => {
+        console.warn("Error prefetching PDF page counts:", error);
+      });
+    }
   }
 
   function getSheet(id: string) {
@@ -31,6 +54,7 @@ export const useSheetStore = defineStore("sheetStore", () => {
   const clearCache = () => {
     persistedSheets.value = [];
     persistedSheetsExpiry.value = 0;
+    clearPdfPageCache();
   };
 
   return { state, getSheets, getSheet, clearCache };

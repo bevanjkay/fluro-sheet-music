@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useStorage } from "@vueuse/core";
+import { getCachedPdfPageCount } from "~/utils/pdf";
 
 const sheetStore = useSheetStore();
 const songStore = useSongStore();
@@ -72,6 +73,21 @@ const songPages: Ref<Record<string, number>> = ref({});
 const findPages = (song: PopulatedSong) => {
   songLoaded.value[song._id] = true;
 
+  // First, try to get cached page count from our new PDF utility
+  if (song.selectedSheet) {
+    const cachedPageCount = getCachedPdfPageCount(song.selectedSheet._id);
+    if (cachedPageCount !== null) {
+      const output = [];
+      for (let i = 1; i <= cachedPageCount; i++) {
+        output.push(i);
+      }
+      // Also update the legacy songPages for compatibility
+      songPages.value[song._id] = cachedPageCount;
+      return output;
+    }
+  }
+
+  // Fallback to legacy behavior: check if we have page count from PdfRender emission
   if (songPages.value[song._id]) {
     const output = [];
     const count = songPages.value[song._id];
@@ -80,6 +96,8 @@ const findPages = (song: PopulatedSong) => {
     }
     return output;
   }
+  
+  // Default fallback
   return [1];
 };
 

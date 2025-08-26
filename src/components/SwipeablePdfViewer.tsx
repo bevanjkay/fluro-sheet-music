@@ -51,25 +51,53 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
   // Preload and cache a PDF
   const preloadPdf = async (url: string): Promise<CachedPdf> => {
     try {
-      const response = await fetch(url);
+      // Use fetch with proper headers and credentials
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Accept": "application/pdf",
+        },
+        credentials: "omit", // Don't send cookies for PDF requests
+      });
+      
       if (!response.ok) {
-        throw new Error(`Failed to fetch PDF: ${response.status}`);
+        throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
       }
       
       const arrayBuffer = await response.arrayBuffer();
       
+      // Verify we actually got PDF data
+      if (arrayBuffer.byteLength === 0) {
+        throw new Error("Received empty PDF data");
+      }
+      
       // Load the PDF to get page count
       const { getDocument } = await import("pdfjs-dist");
-      const pdf = await getDocument(arrayBuffer).promise;
-      const numPages = pdf.numPages;
       
-      return {
-        url,
-        data: arrayBuffer,
-        numPages
-      };
+      try {
+        const pdf = await getDocument({
+          data: arrayBuffer,
+          verbosity: 0, // Reduce console spam
+        }).promise;
+        const numPages = pdf.numPages;
+        
+        // Clean up PDF document
+        pdf.destroy();
+        
+        console.log(`Successfully loaded PDF with ${numPages} pages from ${url}`);
+        
+        return {
+          url,
+          data: arrayBuffer,
+          numPages
+        };
+      } catch (pdfError) {
+        console.error("Error parsing PDF:", pdfError);
+        const errorMessage = pdfError instanceof Error ? pdfError.message : "Unknown PDF parsing error";
+        throw new Error(`Invalid PDF data: ${errorMessage}`);
+      }
     } catch (error) {
-      console.error("Error preloading PDF:", error);
+      console.error("Error preloading PDF from URL:", url, error);
       throw error;
     }
   };
@@ -81,7 +109,7 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
     setIsPreloading(true);
     setPreloadProgress(0);
     
-    const pdfPromises: Promise<{ songId: string; cached: CachedPdf }>[] = [];
+    const pdfPromises: Promise<{ songId: string; songTitle: string; cached: CachedPdf }>[] = [];
     const songPageData: Record<string, number> = {};
     
     // Create promises for all unique PDF URLs
@@ -93,30 +121,45 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
 
       if (selectedSheet) {
         const url = createURL(selectedSheet);
+        console.log(`Preloading PDF for song "${song.title}" from: ${url}`);
         pdfPromises.push(
-          preloadPdf(url).then(cached => ({ songId: song._id, cached }))
+          preloadPdf(url).then(cached => ({ songId: song._id, songTitle: song.title, cached }))
         );
+      } else {
+        console.warn(`No sheet music found for song "${song.title}"`);
       }
     });
+    
+    if (pdfPromises.length === 0) {
+      console.warn("No PDFs to preload");
+      setIsPreloading(false);
+      return;
+    }
     
     try {
       // Load all PDFs with progress tracking
       const results = await Promise.allSettled(pdfPromises);
       const cached: Record<string, CachedPdf> = {};
       let completedCount = 0;
+      let successCount = 0;
       
       results.forEach((result, index) => {
         completedCount++;
         setPreloadProgress((completedCount / results.length) * 100);
         
         if (result.status === "fulfilled") {
-          const { songId, cached: pdfCache } = result.value;
+          const { songId, songTitle, cached: pdfCache } = result.value;
           cached[songId] = pdfCache;
           songPageData[songId] = pdfCache.numPages;
+          successCount++;
+          console.log(`✓ Successfully preloaded "${songTitle}" (${pdfCache.numPages} pages)`);
         } else {
-          console.error("Failed to preload PDF:", result.reason);
+          const songInfo = songs[index]?.title || "Unknown";
+          console.error(`✗ Failed to preload PDF for "${songInfo}":`, result.reason);
         }
       });
+      
+      console.log(`Preloading complete: ${successCount}/${pdfPromises.length} PDFs loaded successfully`);
       
       setCachedPdfs(cached);
       setSongPages(songPageData);
@@ -130,6 +173,7 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
 
   const buildAllPages = (pageData: Record<string, number>, cached: Record<string, CachedPdf>) => {
     const pages: PdfPage[] = [];
+    console.log("Building all pages from:", { pageData, songsCount: songs.length });
 
     songs.forEach((song, songIndex) => {
       const selectedKey = keySelection[song._id];
@@ -142,6 +186,8 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
         const url = createURL(selectedSheet);
         const pdfData = cached[song._id]?.data;
         
+        console.log(`Building pages for song "${song.title}": ${numPages} pages, PDF data: ${pdfData ? "available" : "missing"}`);
+        
         for (let pageNum = 1; pageNum <= numPages; pageNum++) {
           pages.push({
             songId: song._id,
@@ -153,9 +199,12 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
             pdfData: pdfData
           });
         }
+      } else {
+        console.warn(`No sheet music available for song "${song.title}"`);
       }
     });
 
+    console.log(`Built ${pages.length} total pages for ${songs.length} songs`);
     setAllPages(pages);
     setIsPreloading(false);
   };
@@ -374,6 +423,10 @@ export default function SwipeablePdfViewer({ songs }: SwipeablePdfViewerProps) {
             nextEl: ".swiper-button-next",
             prevEl: ".swiper-button-prev",
           }}
+          // Disable virtual slides to keep all PDFs in DOM
+          virtual={false}
+          // Keep slides rendered to avoid re-rendering PDFs
+          watchSlidesProgress={true}
           className="h-full"
           style={{ 
             height: "calc(100vh - 200px)",

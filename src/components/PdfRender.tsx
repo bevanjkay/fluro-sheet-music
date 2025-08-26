@@ -19,7 +19,16 @@ export default function PdfRender({ source, page = 1, song, onData }: PdfRenderP
   const [numPages, setNumPages] = useState<number>(0);
   const [error, setError] = useState<string>("");
 
+  // Log the source data for debugging
+  console.log(`PdfRender for song ${song}, page ${page}:`, {
+    sourceType: typeof source,
+    sourceSize: source instanceof ArrayBuffer ? source.byteLength : "N/A",
+    isArrayBuffer: source instanceof ArrayBuffer,
+    isString: typeof source === "string"
+  });
+
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    console.log(`PDF loaded successfully for song ${song}: ${numPages} pages`);
     setNumPages(numPages);
     if (onData) {
       onData({ id: song, numPages });
@@ -27,8 +36,8 @@ export default function PdfRender({ source, page = 1, song, onData }: PdfRenderP
   };
 
   const onDocumentLoadError = (error: Error) => {
-    console.error("Error loading PDF:", error);
-    setError("Failed to load PDF");
+    console.error(`Error loading PDF for song ${song}:`, error);
+    setError(`Failed to load PDF: ${error.message}`);
   };
 
   if (error) {

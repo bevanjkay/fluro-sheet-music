@@ -24,8 +24,13 @@ export const useSheetStore = defineStore("sheetStore", () => {
   }
 
   watch(() => state.sheets, () => {
-    persistedSheets.value = state.sheets;
-    persistedSheetsExpiry.value = Date.now() + 24 * 60 * 60;
+    // Only persist sheets if the list is not too large
+    if (state.sheets.length < 2000) {
+      persistedSheets.value = state.sheets;
+      persistedSheetsExpiry.value = Date.now() + 24 * 60 * 60 * 1000;
+    } else {
+      console.warn("Sheet list too large to cache, skipping localStorage");
+    }
   });
 
   const clearCache = () => {

@@ -41,8 +41,14 @@ export const useSongStore = defineStore("songStore", () => {
   }
 
   watch(() => state.songs, () => {
-    persistedSongs.value = state.songs;
-    persistedSongsExpiry.value = Date.now() + 24 * 60 * 60;
+    // Only persist songs if the list is not too large (limit to prevent memory issues)
+    // Most churches have < 500 songs, so this should be reasonable
+    if (state.songs.length < 1000) {
+      persistedSongs.value = state.songs;
+      persistedSongsExpiry.value = Date.now() + 24 * 60 * 60 * 1000;
+    } else {
+      console.warn("Song list too large to cache, skipping localStorage");
+    }
   });
 
   const clearCache = () => {

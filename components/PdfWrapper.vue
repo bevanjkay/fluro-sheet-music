@@ -85,6 +85,9 @@ const findPages = (song: PopulatedSong) => {
 
 onBeforeUnmount(() => {
   songStore.setPopulatedSongs([]);
+  songStore.setPlanSongs([]);
+  songPages.value = {};
+  songLoaded.value = {};
 });
 </script>
 
@@ -94,11 +97,16 @@ onBeforeUnmount(() => {
       <swiper-container
         v-if="songStore.state.planSongs && songStore.state.planSongs.length"
         :direction="vertical ? 'vertical' : 'horizontal'"
+        :lazy="true"
+        :preload-images="false"
+        :slides-per-view="1"
+        :space-between="0"
       >
         <template v-for="song in populatedSongs">
           <swiper-slide
             v-for="page in findPages(song)"
             :key="song._id + page"
+            :lazy="true"
           >
           <div v-if="!song.sheetMusic?.length" class="p-12 relative min-h-dvh pt-24" style="min-height: 85vh"> 
             <h1>{{ song.title }}</h1>

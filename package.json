@@ -23,7 +23,7 @@
     "@primevue/themes": "^4.3.6",
     "@tato30/vue-pdf": "^1.11.4",
     "@vueuse/core": "^13.5.0",
-    "nuxt": "^3.17.7",
+    "nuxt": "^3.19.0",
     "nuxt-swiper": "^2.0.1",
     "pdfjs-dist": "^5.3.93",
     "primeicons": "^7.0.0",

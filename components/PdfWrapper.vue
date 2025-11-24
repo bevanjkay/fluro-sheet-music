@@ -75,10 +75,12 @@ const findPages = (song: PopulatedSong) => {
   if (songPages.value[song._id]) {
     const output = [];
     const count = songPages.value[song._id];
-    for (let i = 1; i <= count; i++) {
-      output.push(i);
+    if (count) {
+      for (let i = 1; i <= count; i++) {
+        output.push(i);
+      }
+      return output;
     }
-    return output;
   }
   return [1];
 };

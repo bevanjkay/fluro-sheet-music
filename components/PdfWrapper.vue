@@ -79,8 +79,8 @@ const findPages = (song: PopulatedSong) => {
       for (let i = 1; i <= count; i++) {
         output.push(i);
       }
-      return output;
     }
+    return output;
   }
   return [1];
 };

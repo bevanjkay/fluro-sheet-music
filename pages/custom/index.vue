@@ -51,7 +51,7 @@ const createSetlist = (): void => {
   }
 
   setlistForm.value.songs.forEach((song: PlanSong) => {
-    song.key = selectedKeys.value[song._id] || song.key;
+    song.key = selectedKeys.value[song._id] ?? song.key;
   });
 
   setlistForm.value.created = new Date();

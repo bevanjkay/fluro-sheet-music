@@ -3,6 +3,7 @@ import { useStorage } from "@vueuse/core";
 
 const songStore = useSongStore();
 const sheetStore = useSheetStore();
+const toast = useToast();
 
 const vertical: Ref<boolean> = useStorage("vertical", false);
 
@@ -25,8 +26,30 @@ const clearCache = () => {
   songStore.getSongs();
   sheetStore.clearCache();
   sheetStore.getSheets();
+  
+  // Also clear expired entries
+  clearExpiredCache();
+  
+  toast.add({
+    severity: "success",
+    summary: "Cache Cleared",
+    detail: "All cached data has been cleared and reloaded.",
+    life: 3000,
+  });
+  
   reloadNuxtApp();
 };
+
+// Get current localStorage usage for display
+const storageSize = ref("0 KB");
+const updateStorageSize = () => {
+  const size = getLocalStorageSize();
+  storageSize.value = `${Math.round(size / 1024)} KB`;
+};
+
+onMounted(() => {
+  updateStorageSize();
+});
 </script>
 
 <template>
@@ -49,8 +72,10 @@ v-model="keySelection[song._id]" :options="song.sheetMusic" option-label="title"
         <label><strong>Dark Mode</strong></label><br>
         <SelectButton v-model="darkMode" :options="darkModeOptions" option-label="name" option-value="value" />
       </div>
-      <div>
-        <Button class="mt-4" label="Clear Cache" @click="clearCache" />
+      <div class="flex flex-col gap-2">
+        <label><strong>Storage</strong></label>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Current cache size: {{ storageSize }}</p>
+        <Button class="w-fit" label="Clear Cache" severity="secondary" @click="clearCache" />
       </div>
     </div>
 

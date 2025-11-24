@@ -24,6 +24,19 @@ const setDarkMode = (value: boolean) => {
 };
 
 onMounted(async () => {
+  // Clear expired cache entries on startup to free memory
+  clearExpiredCache();
+  
+  // Check localStorage capacity and warn if approaching limit
+  if (checkLocalStorageCapacity()) {
+    toast.add({
+      severity: "warn",
+      summary: "Storage Warning",
+      detail: "App cache is large. Consider clearing cache in settings.",
+      life: 5000,
+    });
+  }
+  
   if (user.value) {
     await songStore.getSongs();
     await sheetStore.getSheets();

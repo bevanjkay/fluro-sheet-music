@@ -51,6 +51,14 @@ watch(() => props.song, () => {
   hasEmittedData.value = false;
 });
 
+// Clean up PDF resources when component is unmounted
+onBeforeUnmount(() => {
+  if (pdf.value) {
+    // Destroy the PDF document to free memory
+    pdf.value.destroy();
+  }
+});
+
 </script>
 
 <template>

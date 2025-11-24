@@ -85,6 +85,9 @@ const findPages = (song: PopulatedSong) => {
 
 onBeforeUnmount(() => {
   songStore.setPopulatedSongs([]);
+  songStore.setPlanSongs([]);
+  songPages.value = {};
+  songLoaded.value = {};
 });
 </script>
 

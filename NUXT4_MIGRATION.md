@@ -56,8 +56,10 @@ if (count) {
 song.key = selectedKeys.value[song._id];
 
 // After
-song.key = selectedKeys.value[song._id] || song.key;
+song.key = selectedKeys.value[song._id] ?? song.key;
 ```
+
+Note: Using nullish coalescing operator (`??`) instead of logical OR (`||`) to avoid overriding valid falsy values like empty strings.
 
 ## Configuration Files
 No changes were required to:

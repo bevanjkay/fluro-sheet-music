@@ -1,7 +1,14 @@
 <script lang="ts" setup>
-import { useStorage  } from "@vueuse/core";
-import type {RemovableRef} from "@vueuse/core";
-import { VuePDF, usePDF } from "@tato30/vue-pdf";
+import { useStorage } from "@vueuse/core";
+import type { RemovableRef } from "@vueuse/core";
+import * as pdfjsLib from "pdfjs-dist";
+
+if (typeof window !== "undefined") {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/build/pdf.worker.min.mjs",
+    import.meta.url
+  ).toString();
+}
 
 const props = defineProps({
   source: {
@@ -16,51 +23,148 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  sheetId: {
+    type: String,
+    default: "",
+  },
 });
 
 const emit = defineEmits<{
-  (e: "data", value: { id: string, numPages: number }): void
+  (e: "data", value: { id: string, numPages: number, sheetId: string }): void
 }>();
-
-// Use a stable key based on song ID and source to avoid unnecessary re-renders
-const key = computed(() => `${props.song}-${props.source}`);
 
 const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 
-const source = computed(() => {
-  return `${props.source}?access_token=${user.value.token}`;
-});
-
-const { pdf, pages } = usePDF(source);
-
-// Track if we've already emitted data for this song to prevent duplicate emissions
+const imageDataUrl = ref<string | null>(null);
+const isLoading = ref(false);
+const hasError = ref(false);
 const hasEmittedData = ref(false);
-const lastEmittedSong = ref("");
+const lastEmittedSheet = ref("");
 
-// More efficient watcher that prevents duplicate emissions
-watch(pages, (newPages: number) => {
-  if (newPages > 0 && (props.song !== lastEmittedSong.value || !hasEmittedData.value)) {
-    emit("data", { id: props.song, numPages: newPages });
-    hasEmittedData.value = true;
-    lastEmittedSong.value = props.song;
+const HEADER_HEIGHT = 80;
+const MAX_SCALE = 2.5;
+
+const containerStyle = computed(() => ({
+  minHeight: "100vh",
+  paddingTop: `${HEADER_HEIGHT}px`,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "#f5f5f5"
+}));
+
+const imageStyle = computed(() => ({
+  maxWidth: "100vw",
+  maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
+  width: "auto",
+  height: "auto",
+  objectFit: "contain" as const
+}));
+
+const renderPdfToImage = async () => {
+  if (!props.source) {
+    imageDataUrl.value = null;
+    return;
   }
-});
 
-// Reset the emission flag when the song changes
-watch(() => props.song, () => {
+  isLoading.value = true;
+  hasError.value = false;
+  let pdfDoc = null;
+
+  try {
+    const url = `${props.source}?access_token=${user.value.token}`;
+    const loadingTask = pdfjsLib.getDocument(url);
+    pdfDoc = await loadingTask.promise;
+    
+    if (props.sheetId !== lastEmittedSheet.value || !hasEmittedData.value) {
+      emit("data", { id: props.song, numPages: pdfDoc.numPages, sheetId: props.sheetId });
+      hasEmittedData.value = true;
+      lastEmittedSheet.value = props.sheetId;
+    }
+
+    const page = await pdfDoc.getPage(props.page);
+    const viewport = page.getViewport({ scale: 1.0 });
+    
+    const maxHeight = window.screen.height - HEADER_HEIGHT;
+    const maxWidth = window.screen.width;
+    
+    const scale = Math.min(
+      maxWidth / viewport.width,
+      maxHeight / viewport.height,
+      MAX_SCALE
+    );
+    
+    const scaledViewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    
+    if (!context) {
+      throw new Error("Could not get canvas context");
+    }
+    
+    canvas.height = scaledViewport.height;
+    canvas.width = scaledViewport.width;
+    
+    await page.render({
+      canvasContext: context,
+      viewport: scaledViewport,
+      canvas: canvas,
+    }).promise;
+    
+    imageDataUrl.value = canvas.toDataURL("image/jpeg", 0.92);
+    
+    if (pdfDoc) {
+      await pdfDoc.destroy();
+    }
+    
+    isLoading.value = false;
+  } catch (error) {
+    console.error("Error rendering PDF:", error);
+    hasError.value = true;
+    isLoading.value = false;
+    
+    if (pdfDoc) {
+      try {
+        await pdfDoc.destroy();
+      } catch (e) {
+        console.warn("Error destroying PDF after error:", e);
+      }
+    }
+  }
+};
+
+watch(
+  () => [props.source, props.page, props.sheetId, user.value.token],
+  () => {
+    renderPdfToImage();
+  },
+  { immediate: true }
+);
+
+watch(() => props.sheetId, () => {
   hasEmittedData.value = false;
 });
 
-// Clean up PDF resources when component is unmounted
 onBeforeUnmount(() => {
-  if (pdf.value) {
-    // Destroy the PDF document to free memory
-    pdf.value.destroy();
-  }
+  imageDataUrl.value = null;
 });
 
 </script>
 
 <template>
-  <VuePDF :key="key" :pdf="pdf" intent="display" :page="page" fit-parent />
+  <div class="pdf-render-container" :style="containerStyle">
+    <div v-if="isLoading" style="text-align: center;">
+      <ProgressSpinner />
+      <p style="opacity: 0.7; margin-top: 1rem;">Loading PDF...</p>
+    </div>
+    <div v-else-if="hasError" style="text-align: center; color: #dc2626; padding: 2rem;">
+      <p>Error loading PDF page</p>
+    </div>
+    <img
+      v-else-if="imageDataUrl"
+      :src="imageDataUrl"
+      alt="PDF Page"
+      :style="imageStyle"
+    >
+  </div>
 </template>

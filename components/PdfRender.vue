@@ -44,6 +44,13 @@ const hasError = ref(false);
 // Track if we've emitted page count
 const hasEmittedData = ref(false);
 
+// Calculate available viewport height accounting for header
+const getAvailableHeight = () => {
+  // Account for header (approximately 70px with padding) and some margin
+  const headerHeight = 80;
+  return window.innerHeight - headerHeight;
+};
+
 // Render PDF page to image
 const renderPdfToImage = async () => {
   if (!props.shouldLoad || !props.source) {
@@ -71,12 +78,15 @@ const renderPdfToImage = async () => {
     // Get the specific page
     const page = await pdfDoc.getPage(props.page);
     
-    // Calculate scale to fit the viewport
+    // Calculate scale to fit the viewport, accounting for header
     const viewport = page.getViewport({ scale: 1.0 });
+    const availableHeight = getAvailableHeight();
+    const availableWidth = window.innerWidth;
+    
     const scale = Math.min(
-      (window.innerWidth - 40) / viewport.width,
-      (window.innerHeight - 40) / viewport.height,
-      2.0 // Max scale for quality
+      availableWidth / viewport.width,
+      availableHeight / viewport.height,
+      2.5 // Max scale for quality
     );
     
     const scaledViewport = page.getViewport({ scale });
@@ -141,6 +151,25 @@ watch(
   { immediate: true }
 );
 
+// Handle window resize to re-render at appropriate size
+const handleResize = () => {
+  if (props.shouldLoad && imageDataUrl.value) {
+    renderPdfToImage();
+  }
+};
+
+let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+const debouncedResize = () => {
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
+  }
+  resizeTimeout = setTimeout(handleResize, 300);
+};
+
+onMounted(() => {
+  window.addEventListener("resize", debouncedResize);
+});
+
 // Reset emission tracking when song changes
 watch(() => props.song, () => {
   hasEmittedData.value = false;
@@ -149,12 +178,16 @@ watch(() => props.song, () => {
 // Clean up on unmount
 onBeforeUnmount(() => {
   imageDataUrl.value = null;
+  window.removeEventListener("resize", debouncedResize);
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
+  }
 });
 
 </script>
 
 <template>
-  <div class="pdf-render-container" style="min-height: 85vh; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
+  <div class="pdf-render-container" style="min-height: 100vh; padding-top: 80px; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
     <div v-if="isLoading" style="text-align: center;">
       <ProgressSpinner />
       <p style="opacity: 0.7; margin-top: 1rem;">Loading PDF...</p>
@@ -166,7 +199,7 @@ onBeforeUnmount(() => {
       v-else-if="imageDataUrl"
       :src="imageDataUrl"
       alt="PDF Page"
-      style="max-width: 100%; max-height: 85vh; width: auto; height: auto; object-fit: contain;"
+      style="max-width: 100vw; max-height: calc(100vh - 80px); width: auto; height: auto; object-fit: contain;"
     >
     <div v-else-if="!shouldLoad" style="opacity: 0.5;">
       <p>Slide not loaded</p>

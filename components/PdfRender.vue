@@ -45,11 +45,29 @@ const hasError = ref(false);
 const hasEmittedData = ref(false);
 
 // Calculate available viewport height accounting for header
+const HEADER_HEIGHT = 80; // Header height including padding and margins
+
 const getAvailableHeight = () => {
-  // Account for header (approximately 70px with padding) and some margin
-  const headerHeight = 80;
-  return window.innerHeight - headerHeight;
+  return window.innerHeight - HEADER_HEIGHT;
 };
+
+// Computed styles using the constant
+const containerStyle = computed(() => ({
+  minHeight: "100vh",
+  paddingTop: `${HEADER_HEIGHT}px`,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "#f5f5f5"
+}));
+
+const imageStyle = computed(() => ({
+  maxWidth: "100vw",
+  maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
+  width: "auto",
+  height: "auto",
+  objectFit: "contain" as const
+}));
 
 // Render PDF page to image
 const renderPdfToImage = async () => {
@@ -158,12 +176,12 @@ const handleResize = () => {
   }
 };
 
-let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+const resizeTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 const debouncedResize = () => {
-  if (resizeTimeout) {
-    clearTimeout(resizeTimeout);
+  if (resizeTimeout.value) {
+    clearTimeout(resizeTimeout.value);
   }
-  resizeTimeout = setTimeout(handleResize, 300);
+  resizeTimeout.value = setTimeout(handleResize, 300);
 };
 
 onMounted(() => {
@@ -179,15 +197,15 @@ watch(() => props.song, () => {
 onBeforeUnmount(() => {
   imageDataUrl.value = null;
   window.removeEventListener("resize", debouncedResize);
-  if (resizeTimeout) {
-    clearTimeout(resizeTimeout);
+  if (resizeTimeout.value) {
+    clearTimeout(resizeTimeout.value);
   }
 });
 
 </script>
 
 <template>
-  <div class="pdf-render-container" style="min-height: 100vh; padding-top: 80px; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
+  <div class="pdf-render-container" :style="containerStyle">
     <div v-if="isLoading" style="text-align: center;">
       <ProgressSpinner />
       <p style="opacity: 0.7; margin-top: 1rem;">Loading PDF...</p>
@@ -199,7 +217,7 @@ onBeforeUnmount(() => {
       v-else-if="imageDataUrl"
       :src="imageDataUrl"
       alt="PDF Page"
-      style="max-width: 100vw; max-height: calc(100vh - 80px); width: auto; height: auto; object-fit: contain;"
+      :style="imageStyle"
     >
     <div v-else-if="!shouldLoad" style="opacity: 0.5;">
       <p>Slide not loaded</p>

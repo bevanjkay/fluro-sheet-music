@@ -13,13 +13,6 @@ const createURL = (sheet: Sheet) => {
 
 const songLoaded: Ref<Record<string, boolean>> = ref({});
 
-// Track active slide for lazy loading
-const activeIndex = ref(0);
-const swiperRef = ref<HTMLElement | null>(null);
-
-// Number of slides to preload before and after the active slide
-const PRELOAD_RANGE = 2;
-
 const populatedSongs = computed(() => {
   const songs = songStore.state.songs;
   const sheets = sheetStore.state.sheets;
@@ -69,9 +62,10 @@ const populatedSongs = computed(() => {
   return populated;
 });
 
-const handleData = (data: { id: string, numPages: number }) => {
-  const { id, numPages } = data;
-  songPages.value[id] = numPages;
+const handleData = (data: { id: string, numPages: number, sheetId: string }) => {
+  const { id, numPages, sheetId } = data;
+  const key = `${id}_${sheetId}`;
+  songPages.value[key] = numPages;
 };
 
 const songPages: Ref<Record<string, number>> = ref({});
@@ -79,9 +73,10 @@ const songPages: Ref<Record<string, number>> = ref({});
 const findPages = (song: PopulatedSong) => {
   songLoaded.value[song._id] = true;
 
-  if (songPages.value[song._id]) {
+  const key = `${song._id}_${song.selectedSheet?._id}`;
+  if (songPages.value[key]) {
     const output = [];
-    const count = songPages.value[song._id];
+    const count = songPages.value[key];
     if (count) {
       for (let i = 1; i <= count; i++) {
         output.push(i);
@@ -108,29 +103,6 @@ const allSlides = computed(() => {
   return slides;
 });
 
-// Determine if a slide should be loaded based on its proximity to the active slide
-const shouldLoadSlide = (slideIndex: number) => {
-  return Math.abs(slideIndex - activeIndex.value) <= PRELOAD_RANGE;
-};
-
-// Setup swiper event listeners
-onMounted(() => {
-  nextTick(() => {
-    if (swiperRef.value) {
-      const swiper = swiperRef.value as HTMLElement & { swiper?: { activeIndex: number } };
-      
-      // Listen for slide change events
-      swiper.addEventListener("slidechange", (event: Event) => {
-        const customEvent = event as CustomEvent;
-        activeIndex.value = customEvent.detail[0].activeIndex;
-      });
-      
-      // Initialize with first slide
-      activeIndex.value = swiper.swiper?.activeIndex ?? 0;
-    }
-  });
-});
-
 onBeforeUnmount(() => {
   songStore.setPopulatedSongs([]);
   songStore.setPlanSongs([]);
@@ -144,12 +116,11 @@ onBeforeUnmount(() => {
     <div class="pdf">
       <swiper-container
         v-if="songStore.state.planSongs && songStore.state.planSongs.length"
-        ref="swiperRef"
         :direction="vertical ? 'vertical' : 'horizontal'"
       >
         <swiper-slide
           v-for="slide in allSlides"
-          :key="slide.song._id + slide.page"
+          :key="slide.song._id + slide.page + (slide.song.selectedSheet?._id || '')"
         >
           <div v-if="!slide.song.sheetMusic?.length" class="p-12 relative min-h-dvh pt-24" style="min-height: 85vh"> 
             <h1>{{ slide.song.title }}</h1>
@@ -160,7 +131,7 @@ onBeforeUnmount(() => {
             :page="slide.page"
             :source="createURL(slide.song.selectedSheet)"
             :song="slide.song._id"
-            :should-load="shouldLoadSlide(slide.index)"
+            :sheet-id="slide.song.selectedSheet._id"
             @data="handleData"
           />
         </swiper-slide>

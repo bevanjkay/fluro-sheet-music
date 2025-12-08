@@ -24,14 +24,14 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  shouldLoad: {
-    type: Boolean,
-    default: true,
+  sheetId: {
+    type: String,
+    default: "",
   },
 });
 
 const emit = defineEmits<{
-  (e: "data", value: { id: string, numPages: number }): void
+  (e: "data", value: { id: string, numPages: number, sheetId: string }): void
 }>();
 
 const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
@@ -41,8 +41,9 @@ const imageDataUrl = ref<string | null>(null);
 const isLoading = ref(false);
 const hasError = ref(false);
 
-// Track if we've emitted page count
+// Track if we've emitted page count for this specific sheet
 const hasEmittedData = ref(false);
+const lastEmittedSheet = ref("");
 
 // Calculate available viewport height accounting for header
 const HEADER_HEIGHT = 80; // Header height including padding and margins
@@ -71,7 +72,7 @@ const imageStyle = computed(() => ({
 
 // Render PDF page to image
 const renderPdfToImage = async () => {
-  if (!props.shouldLoad || !props.source) {
+  if (!props.source) {
     imageDataUrl.value = null;
     return;
   }
@@ -87,10 +88,11 @@ const renderPdfToImage = async () => {
     const loadingTask = pdfjsLib.getDocument(url);
     pdfDoc = await loadingTask.promise;
     
-    // Emit the total page count once
-    if (!hasEmittedData.value) {
-      emit("data", { id: props.song, numPages: pdfDoc.numPages });
+    // Emit the total page count once per sheet
+    if (props.sheetId !== lastEmittedSheet.value || !hasEmittedData.value) {
+      emit("data", { id: props.song, numPages: pdfDoc.numPages, sheetId: props.sheetId });
       hasEmittedData.value = true;
+      lastEmittedSheet.value = props.sheetId;
     }
 
     // Get the specific page
@@ -157,21 +159,16 @@ const renderPdfToImage = async () => {
 
 // Watch for changes that require re-rendering
 watch(
-  () => [props.source, props.page, props.shouldLoad, user.value.token],
+  () => [props.source, props.page, props.sheetId, user.value.token],
   () => {
-    if (props.shouldLoad) {
-      renderPdfToImage();
-    } else {
-      // Clear the image when not visible to save memory
-      imageDataUrl.value = null;
-    }
+    renderPdfToImage();
   },
   { immediate: true }
 );
 
 // Handle window resize to re-render at appropriate size
 const handleResize = () => {
-  if (props.shouldLoad && imageDataUrl.value) {
+  if (imageDataUrl.value) {
     renderPdfToImage();
   }
 };
@@ -188,8 +185,8 @@ onMounted(() => {
   window.addEventListener("resize", debouncedResize);
 });
 
-// Reset emission tracking when song changes
-watch(() => props.song, () => {
+// Reset emission tracking when sheet changes
+watch(() => props.sheetId, () => {
   hasEmittedData.value = false;
 });
 
@@ -219,8 +216,5 @@ onBeforeUnmount(() => {
       alt="PDF Page"
       :style="imageStyle"
     >
-    <div v-else-if="!shouldLoad" style="opacity: 0.5;">
-      <p>Slide not loaded</p>
-    </div>
   </div>
 </template>

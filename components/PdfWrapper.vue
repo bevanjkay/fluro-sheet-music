@@ -87,7 +87,6 @@ const findPages = (song: PopulatedSong) => {
   return [1];
 };
 
-// Create a flat list of all slides with their indices
 const allSlides = computed(() => {
   const slides: Array<{ song: PopulatedSong, page: number, index: number }> = [];
   let index = 0;
@@ -138,12 +137,11 @@ onBeforeUnmount(() => {
       </swiper-container>
       <div v-else class="p-12 relative min-h-dvh pt-24">
         <h2>No songs in this plan.</h2>
-        <div
-class="grid row gap-1 start" style="max-width: 400px;">
-        <Button @click="navigateTo('/plans')">View list of service plans</Button>
-        <Button @click="navigateTo('/songs')">View list of songs</Button>
-        <Button @click="navigateTo('/')">Go Home</Button>
-      </div>
+        <div class="grid row gap-1 start" style="max-width: 400px;">
+          <Button @click="navigateTo('/plans')">View list of service plans</Button>
+          <Button @click="navigateTo('/songs')">View list of songs</Button>
+          <Button @click="navigateTo('/')">Go Home</Button>
+        </div>
       </div>
     </div>
   </div>

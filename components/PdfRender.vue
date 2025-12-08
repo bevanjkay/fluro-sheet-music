@@ -3,7 +3,6 @@ import { useStorage } from "@vueuse/core";
 import type { RemovableRef } from "@vueuse/core";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Set up the worker - use local worker file from pdfjs-dist package
 if (typeof window !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
     "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -36,23 +35,15 @@ const emit = defineEmits<{
 
 const user: RemovableRef<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
 
-// State for the rendered image
 const imageDataUrl = ref<string | null>(null);
 const isLoading = ref(false);
 const hasError = ref(false);
-
-// Track if we've emitted page count for this specific sheet
 const hasEmittedData = ref(false);
 const lastEmittedSheet = ref("");
 
-// Calculate available viewport height accounting for header
-const HEADER_HEIGHT = 80; // Header height including padding and margins
+const HEADER_HEIGHT = 80;
+const MAX_SCALE = 2.5;
 
-const getAvailableHeight = () => {
-  return window.innerHeight - HEADER_HEIGHT;
-};
-
-// Computed styles using the constant
 const containerStyle = computed(() => ({
   minHeight: "100vh",
   paddingTop: `${HEADER_HEIGHT}px`,
@@ -70,7 +61,6 @@ const imageStyle = computed(() => ({
   objectFit: "contain" as const
 }));
 
-// Render PDF page to image
 const renderPdfToImage = async () => {
   if (!props.source) {
     imageDataUrl.value = null;
@@ -83,35 +73,28 @@ const renderPdfToImage = async () => {
 
   try {
     const url = `${props.source}?access_token=${user.value.token}`;
-    
-    // Load the PDF document
     const loadingTask = pdfjsLib.getDocument(url);
     pdfDoc = await loadingTask.promise;
     
-    // Emit the total page count once per sheet
     if (props.sheetId !== lastEmittedSheet.value || !hasEmittedData.value) {
       emit("data", { id: props.song, numPages: pdfDoc.numPages, sheetId: props.sheetId });
       hasEmittedData.value = true;
       lastEmittedSheet.value = props.sheetId;
     }
 
-    // Get the specific page
     const page = await pdfDoc.getPage(props.page);
-    
-    // Calculate scale to fit the viewport, accounting for header
     const viewport = page.getViewport({ scale: 1.0 });
-    const availableHeight = getAvailableHeight();
-    const availableWidth = window.innerWidth;
+    
+    const maxHeight = window.screen.height - HEADER_HEIGHT;
+    const maxWidth = window.screen.width;
     
     const scale = Math.min(
-      availableWidth / viewport.width,
-      availableHeight / viewport.height,
-      2.5 // Max scale for quality
+      maxWidth / viewport.width,
+      maxHeight / viewport.height,
+      MAX_SCALE
     );
     
     const scaledViewport = page.getViewport({ scale });
-    
-    // Create canvas
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     
@@ -122,20 +105,14 @@ const renderPdfToImage = async () => {
     canvas.height = scaledViewport.height;
     canvas.width = scaledViewport.width;
     
-    // Render PDF page to canvas
-    const renderContext = {
+    await page.render({
       canvasContext: context,
       viewport: scaledViewport,
       canvas: canvas,
-    };
+    }).promise;
     
-    await page.render(renderContext).promise;
-    
-    // Convert canvas to image data URL
     imageDataUrl.value = canvas.toDataURL("image/jpeg", 0.92);
     
-    // Clean up: destroy the PDF document immediately after rendering
-    // This frees memory since we only keep the image
     if (pdfDoc) {
       await pdfDoc.destroy();
     }
@@ -146,7 +123,6 @@ const renderPdfToImage = async () => {
     hasError.value = true;
     isLoading.value = false;
     
-    // Clean up on error
     if (pdfDoc) {
       try {
         await pdfDoc.destroy();
@@ -157,7 +133,6 @@ const renderPdfToImage = async () => {
   }
 };
 
-// Watch for changes that require re-rendering
 watch(
   () => [props.source, props.page, props.sheetId, user.value.token],
   () => {
@@ -166,37 +141,12 @@ watch(
   { immediate: true }
 );
 
-// Handle window resize to re-render at appropriate size
-const handleResize = () => {
-  if (imageDataUrl.value) {
-    renderPdfToImage();
-  }
-};
-
-const resizeTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
-const debouncedResize = () => {
-  if (resizeTimeout.value) {
-    clearTimeout(resizeTimeout.value);
-  }
-  resizeTimeout.value = setTimeout(handleResize, 300);
-};
-
-onMounted(() => {
-  window.addEventListener("resize", debouncedResize);
-});
-
-// Reset emission tracking when sheet changes
 watch(() => props.sheetId, () => {
   hasEmittedData.value = false;
 });
 
-// Clean up on unmount
 onBeforeUnmount(() => {
   imageDataUrl.value = null;
-  window.removeEventListener("resize", debouncedResize);
-  if (resizeTimeout.value) {
-    clearTimeout(resizeTimeout.value);
-  }
 });
 
 </script>

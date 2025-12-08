@@ -13,6 +13,13 @@ const createURL = (sheet: Sheet) => {
 
 const songLoaded: Ref<Record<string, boolean>> = ref({});
 
+// Track active slide for lazy loading
+const activeIndex = ref(0);
+const swiperRef = ref<HTMLElement | null>(null);
+
+// Number of slides to preload before and after the active slide
+const PRELOAD_RANGE = 2;
+
 const populatedSongs = computed(() => {
   const songs = songStore.state.songs;
   const sheets = sheetStore.state.sheets;
@@ -85,6 +92,45 @@ const findPages = (song: PopulatedSong) => {
   return [1];
 };
 
+// Create a flat list of all slides with their indices
+const allSlides = computed(() => {
+  const slides: Array<{ song: PopulatedSong, page: number, index: number }> = [];
+  let index = 0;
+  
+  populatedSongs.value.forEach((song) => {
+    const pages = findPages(song);
+    pages.forEach((page) => {
+      slides.push({ song, page, index });
+      index++;
+    });
+  });
+  
+  return slides;
+});
+
+// Determine if a slide should be loaded based on its proximity to the active slide
+const shouldLoadSlide = (slideIndex: number) => {
+  return Math.abs(slideIndex - activeIndex.value) <= PRELOAD_RANGE;
+};
+
+// Setup swiper event listeners
+onMounted(() => {
+  nextTick(() => {
+    if (swiperRef.value) {
+      const swiper = swiperRef.value as HTMLElement & { swiper?: { activeIndex: number } };
+      
+      // Listen for slide change events
+      swiper.addEventListener("slidechange", (event: Event) => {
+        const customEvent = event as CustomEvent;
+        activeIndex.value = customEvent.detail[0].activeIndex;
+      });
+      
+      // Initialize with first slide
+      activeIndex.value = swiper.swiper?.activeIndex ?? 0;
+    }
+  });
+});
+
 onBeforeUnmount(() => {
   songStore.setPopulatedSongs([]);
   songStore.setPlanSongs([]);
@@ -98,26 +144,26 @@ onBeforeUnmount(() => {
     <div class="pdf">
       <swiper-container
         v-if="songStore.state.planSongs && songStore.state.planSongs.length"
+        ref="swiperRef"
         :direction="vertical ? 'vertical' : 'horizontal'"
       >
-        <template v-for="song in populatedSongs">
-          <swiper-slide
-            v-for="page in findPages(song)"
-            :key="song._id + page"
-          >
-          <div v-if="!song.sheetMusic?.length" class="p-12 relative min-h-dvh pt-24" style="min-height: 85vh"> 
-            <h1>{{ song.title }}</h1>
+        <swiper-slide
+          v-for="slide in allSlides"
+          :key="slide.song._id + slide.page"
+        >
+          <div v-if="!slide.song.sheetMusic?.length" class="p-12 relative min-h-dvh pt-24" style="min-height: 85vh"> 
+            <h1>{{ slide.song.title }}</h1>
             <h3 style="color: darkred">No sheet music for this song.</h3>
           </div>
           <PdfRender
-              v-if="song.selectedSheet && song.sheetMusic?.length"
-              :page="page"
-              :source="createURL(song.selectedSheet)"
-              :song="song._id"
-              @data="handleData"
-            />
-          </swiper-slide>
-        </template>
+            v-if="slide.song.selectedSheet && slide.song.sheetMusic?.length"
+            :page="slide.page"
+            :source="createURL(slide.song.selectedSheet)"
+            :song="slide.song._id"
+            :should-load="shouldLoadSlide(slide.index)"
+            @data="handleData"
+          />
+        </swiper-slide>
       </swiper-container>
       <div v-else class="p-12 relative min-h-dvh pt-24">
         <h2>No songs in this plan.</h2>

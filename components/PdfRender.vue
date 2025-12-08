@@ -3,9 +3,12 @@ import { useStorage } from "@vueuse/core";
 import type { RemovableRef } from "@vueuse/core";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Set up the worker
+// Set up the worker - use local worker file from pdfjs-dist package
 if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.449/pdf.worker.mjs";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/build/pdf.worker.min.mjs",
+    import.meta.url
+  ).toString();
 }
 
 const props = defineProps({
@@ -105,7 +108,6 @@ const renderPdfToImage = async () => {
     // This frees memory since we only keep the image
     if (pdfDoc) {
       await pdfDoc.destroy();
-      pdfDoc = null;
     }
     
     isLoading.value = false;

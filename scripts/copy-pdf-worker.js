@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#! /usr/bin/env node
 
 import { copyFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
@@ -19,6 +19,6 @@ try {
   
   console.log("✓ PDF.js worker copied to public directory");
 } catch (error) {
-  console.error("Error copying PDF.js worker:", error.message);
+  console.error(`Error copying PDF.js worker from ${source} to ${destination}:`, error.message);
   process.exit(1);
 }

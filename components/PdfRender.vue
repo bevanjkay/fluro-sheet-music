@@ -3,11 +3,9 @@ import { useStorage } from "@vueuse/core";
 import type { RemovableRef } from "@vueuse/core";
 import * as pdfjsLib from "pdfjs-dist";
 
+// Use CDN for worker to avoid Safari/iOS compatibility issues
 if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/build/pdf.worker.min.mjs",
-    import.meta.url
-  ).toString();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
 }
 
 const props = defineProps({
@@ -94,7 +92,9 @@ const renderPdfToImage = async () => {
       MAX_SCALE
     );
     
-    const scaledViewport = page.getViewport({ scale });
+    // Account for device pixel ratio for sharper rendering on high-DPI displays (like iPad Retina)
+    const pixelRatio = window.devicePixelRatio || 1;
+    const scaledViewport = page.getViewport({ scale: scale * pixelRatio });
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     
@@ -108,7 +108,6 @@ const renderPdfToImage = async () => {
     await page.render({
       canvasContext: context,
       viewport: scaledViewport,
-      canvas: canvas,
     }).promise;
     
     imageDataUrl.value = canvas.toDataURL("image/jpeg", 0.92);

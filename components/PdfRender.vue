@@ -106,7 +106,6 @@ const renderPdfToImage = async () => {
     await page.render({
       canvasContext: context,
       viewport: scaledViewport,
-      canvas: canvas,
     }).promise;
     
     imageDataUrl.value = canvas.toDataURL("image/jpeg", 0.92);

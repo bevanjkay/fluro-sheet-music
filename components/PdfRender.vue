@@ -5,7 +5,7 @@ import * as pdfjsLib from "pdfjs-dist";
 
 // Use CDN for worker to avoid Safari/iOS compatibility issues
 if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@5.4.449/build/pdf.worker.min.mjs";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
 }
 
 const props = defineProps({

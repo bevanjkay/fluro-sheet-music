@@ -3,9 +3,9 @@ import { useStorage } from "@vueuse/core";
 import type { RemovableRef } from "@vueuse/core";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Use worker from public directory for better compatibility across all browsers
+// Use CDN for worker to avoid Safari/iOS compatibility issues
 if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@5.4.449/build/pdf.worker.min.mjs";
 }
 
 const props = defineProps({

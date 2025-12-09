@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare && node scripts/copy-pdf-worker.js"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.11.0",

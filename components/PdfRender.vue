@@ -92,7 +92,9 @@ const renderPdfToImage = async () => {
       MAX_SCALE
     );
     
-    const scaledViewport = page.getViewport({ scale });
+    // Account for device pixel ratio for sharper rendering on high-DPI displays (like iPad Retina)
+    const pixelRatio = window.devicePixelRatio || 1;
+    const scaledViewport = page.getViewport({ scale: scale * pixelRatio });
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     

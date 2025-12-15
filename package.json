@@ -18,13 +18,13 @@
     "@nuxtjs/device": "^3.2.4",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@pinia/nuxt": "^0.11.3",
-    "@primevue/forms": "^4.5.0",
-    "@primevue/nuxt-module": "^4.5.0",
-    "@primevue/themes": "^4.5.0",
+    "@primevue/forms": "^4.5.1",
+    "@primevue/nuxt-module": "^4.5.1",
+    "@primevue/themes": "^4.5.1",
     "@vueuse/core": "^14.1.0",
     "nuxt": "^4.2.1",
     "nuxt-swiper": "^2.0.1",
-    "pdfjs-dist": "^4.10.38",
+    "pdfjs-dist": "^5.4.449",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.0",
     "vue": "latest",
@@ -34,12 +34,12 @@
     "@nuxt/eslint-config": "^1.7.1",
     "@nuxt/types": "^2.18.1",
     "@nuxt/typescript-build": "^3.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
     "eslint": "^9.31.0",
     "eslint-plugin-vue": "^10.2.0",
     "sass-embedded": "^1.93.3",
     "vue-eslint-parser": "^10.1.4",
-    "vue-tsc": "^3.1.5"
+    "vue-tsc": "^3.1.7"
   },
   "overrides": {
     "@nuxt/kit": "^4.2.1"

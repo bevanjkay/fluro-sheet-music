@@ -2,10 +2,11 @@
 import { useStorage } from "@vueuse/core";
 import type { RemovableRef } from "@vueuse/core";
 import * as pdfjsLib from "pdfjs-dist";
+import { version } from "pdfjs-dist/package.json";
 
 // Use CDN for worker to avoid Safari/iOS compatibility issues
 if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${version}/build/pdf.worker.min.mjs`;
 }
 
 const props = defineProps({
@@ -107,6 +108,7 @@ const renderPdfToImage = async () => {
     
     await page.render({
       canvasContext: context,
+      canvas,
       viewport: scaledViewport,
     }).promise;
     

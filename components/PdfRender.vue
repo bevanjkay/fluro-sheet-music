@@ -107,6 +107,7 @@ const renderPdfToImage = async () => {
     
     await page.render({
       canvasContext: context,
+      canvas,
       viewport: scaledViewport,
     }).promise;
     

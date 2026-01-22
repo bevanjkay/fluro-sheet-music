@@ -1,5 +1,6 @@
 import { definePreset } from "@primevue/themes";
 import Aura from "@primevue/themes/aura";
+import legacy from "@vitejs/plugin-legacy";
 
 const customPreset = definePreset(Aura, {
   semantic: {
@@ -98,5 +99,12 @@ export default defineNuxtConfig({
         cssLayerOrder: "tailwind-base, primevue, tailwind-utilities"
       },
     },
+  },
+  vite: {
+    plugins: [
+      legacy({
+        targets: ["safari >= 14", "ios >= 14", "defaults"],
+      }),
+    ],
   },
 });

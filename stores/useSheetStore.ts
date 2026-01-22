@@ -9,12 +9,12 @@ export const useSheetStore = defineStore("sheetStore", () => {
   const persistedSheetsExpiry: Ref<number> = useStorage("persistedSheetsExpiry", 0);
 
   async function getSheets() {
-    if (persistedSheetsExpiry.value > Date.now()) {
-      if (state.sheets.length > 0) {
-        state.sheets = persistedSheets.value;
-        return;
-      }
+    // Check if we have valid cached data
+    if (persistedSheetsExpiry.value > Date.now() && persistedSheets.value.length > 0) {
+      state.sheets = persistedSheets.value;
+      return;
     }
+
     const { data } = await useAsyncFluroData("sheetMusic") as { data: Ref<Sheet[]> };
     state.sheets = data.value;
   }

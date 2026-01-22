@@ -38,8 +38,7 @@ onMounted(async () => {
   }
   
   if (user.value) {
-    await songStore.getSongs();
-    await sheetStore.getSheets();
+    await Promise.all([songStore.getSongs(), sheetStore.getSheets()]);
   }
 
   setDarkMode(darkMode.value);

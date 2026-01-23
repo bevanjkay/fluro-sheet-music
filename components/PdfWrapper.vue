@@ -13,28 +13,29 @@ const createURL = (sheet: Sheet) => {
 
 const songLoaded: Ref<Record<string, boolean>> = ref({});
 
-const populatedSongs = computed(() => {
-  const songs = songStore.state.songs;
-  const sheets = sheetStore.state.sheets;
-  const planSongs = songStore.state.planSongs;
+// Build lookup maps for O(1) access instead of O(n) find() calls
+const songMap = computed(() => new Map(songStore.state.songs.map(s => [s._id, s])));
+const sheetMap = computed(() => new Map(sheetStore.state.sheets.map(s => [s._id, s])));
 
+// Pure computed - no side effects
+const populatedSongs = computed(() => {
+  const planSongs = songStore.state.planSongs;
   const populated: PopulatedSong[] = [];
 
   planSongs.forEach((song: PlanSong) => {
-    const matchedSong: PopulatedSong | undefined = songs.find((s: Song) => s._id == song._id);
-    if (!matchedSong) {
+    const baseSong = songMap.value.get(song._id);
+    if (!baseSong) {
       return;
     }
 
-    songLoaded.value[song._id] = false;
+    // Create a copy to avoid mutating the original
+    const matchedSong: PopulatedSong = { ...baseSong, pages: [1], sheetMusic: [], selectedSheet: undefined };
 
-    matchedSong.pages = [1];
+    // Populate sheet music using Map lookup
+    const sheetMusicRefs = matchedSong.data?.sheetMusic || [];
     const populatedSheets: Sheet[] = [];
-    if (!matchedSong.data.sheetMusic) {
-      matchedSong.data.sheetMusic = [];
-    }
-    matchedSong.data.sheetMusic.forEach((sheet) => {
-      const matchedSheet = sheets.find((s: Sheet) => s._id == sheet._id);
+    sheetMusicRefs.forEach((sheetRef) => {
+      const matchedSheet = sheetMap.value.get(sheetRef._id);
       if (matchedSheet) {
         populatedSheets.push(matchedSheet);
       }
@@ -42,25 +43,45 @@ const populatedSongs = computed(() => {
 
     matchedSong.sheetMusic = populatedSheets;
 
-    if (keySelection.value[song._id]) {
-      matchedSong.selectedSheet = populatedSheets.find((sheet: Sheet) => sheet._id == keySelection.value[song._id]);
-    }
-    else {
-      matchedSong.selectedSheet = populatedSheets.find((sheet: Sheet) => sheet.data?.key == song.key);
-
-      if (!matchedSong.selectedSheet) {
-        matchedSong.selectedSheet = populatedSheets[0];
-      }
+    // Determine selected sheet (read-only from keySelection)
+    const savedKey = keySelection.value[song._id];
+    if (savedKey) {
+      matchedSong.selectedSheet = populatedSheets.find((sheet: Sheet) => sheet._id === savedKey);
     }
 
-    keySelection.value[song._id] = matchedSong.selectedSheet?._id;
+    if (!matchedSong.selectedSheet) {
+      matchedSong.selectedSheet = populatedSheets.find((sheet: Sheet) => sheet.data?.key === song.key);
+    }
+
+    if (!matchedSong.selectedSheet) {
+      matchedSong.selectedSheet = populatedSheets[0];
+    }
 
     populated.push(matchedSong);
   });
 
-  songStore.setPopulatedSongs(populated);
   return populated;
 });
+
+// Handle side effects in a watcher instead of inside the computed
+watch(populatedSongs, (populated) => {
+  // Update songLoaded state
+  populated.forEach((song) => {
+    if (!(song._id in songLoaded.value)) {
+      songLoaded.value[song._id] = false;
+    }
+  });
+
+  // Update key selections for songs that don't have one saved
+  populated.forEach((song) => {
+    if (!keySelection.value[song._id] && song.selectedSheet) {
+      keySelection.value[song._id] = song.selectedSheet._id;
+    }
+  });
+
+  // Update store
+  songStore.setPopulatedSongs(populated);
+}, { immediate: true });
 
 const handleData = (data: { id: string, numPages: number, sheetId: string }) => {
   const { id, numPages, sheetId } = data;

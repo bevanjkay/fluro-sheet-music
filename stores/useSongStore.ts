@@ -11,12 +11,10 @@ export const useSongStore = defineStore("songStore", () => {
   const persistedSongsExpiry: Ref<number> = useStorage("persistedSongsExpiry", 0);
 
   async function getSongs() {
-
-    if (persistedSongsExpiry.value > Date.now()) {
-      if (state.songs.length > 0) {
-        state.songs = persistedSongs.value;
-        return;
-      }
+    // Check if we have valid cached data
+    if (persistedSongsExpiry.value > Date.now() && persistedSongs.value.length > 0) {
+      state.songs = persistedSongs.value;
+      return;
     }
 
     try {

@@ -1,7 +1,5 @@
 <template>
   <page>
-    <LegacyWarning />
-
     <div class="mb-8">
       <typography variant="h1" size="heading-xs" class="font-normal tracking-widest text-xs mb-3">FLURO SHEET MUSIC VIEWER</typography>
       <typography variant="p" size="heading-xl">Welcome!</typography>

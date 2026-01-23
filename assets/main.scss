@@ -26,9 +26,18 @@ canvas {
 
 
 .image-w-placeholder {
+  position: relative;
+  overflow: hidden;
+  // Padding-bottom technique for 16:9 aspect ratio (Safari 14 compatible)
+  padding-bottom: 56.25%;
+
   img {
-    aspect-ratio: 16/9;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    object-fit: cover;
     background: #eee;
   }
 }

@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
           v-for="slide in allSlides"
           :key="slide.song._id + slide.page + (slide.song.selectedSheet?._id || '')"
         >
-          <div v-if="!slide.song.sheetMusic?.length" class="p-12 relative min-h-dvh pt-24" style="min-height: 85vh"> 
+          <div v-if="!slide.song.sheetMusic?.length" class="p-12 relative min-h-screen pt-24" style="min-height: 85vh"> 
             <h1>{{ slide.song.title }}</h1>
             <h3 style="color: darkred">No sheet music for this song.</h3>
           </div>
@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
           />
         </swiper-slide>
       </swiper-container>
-      <div v-else class="p-12 relative min-h-dvh pt-24">
+      <div v-else class="p-12 relative min-h-screen pt-24">
         <h2>No songs in this plan.</h2>
         <div class="grid row gap-1 start" style="max-width: 400px;">
           <Button @click="navigateTo('/plans')">View list of service plans</Button>

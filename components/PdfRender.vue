@@ -105,7 +105,8 @@ const renderPdfToImage = async () => {
 
     if (!pdfDoc) {
       const url = `${props.source}?access_token=${user.value.token}`;
-      const loadingTask = pdfjsLib.getDocument(url);
+      // isEvalSupported: false mitigates CVE-2024-4367 while staying on v3.x for Safari 14
+      const loadingTask = pdfjsLib.getDocument({ url, isEvalSupported: false });
       pdfDoc = await loadingTask.promise;
 
       // Cache the document

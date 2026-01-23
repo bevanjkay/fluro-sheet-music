@@ -64,7 +64,7 @@ const useLogin = async (): Promise<void> => {
         <typography variant="p" size="text"><small>Login using your Fluro account details.</small></typography>
       </template>
       <template #content>
-        <div class="flex flex-col gap-4">
+        <form class="flex flex-col gap-4" @submit.prevent="useLogin">
           <FloatLabel variant="in">
             <InputText v-model="username" :disabled="pending" size="large" name="username" type="text" />
             <label for="username">Username</label>
@@ -78,10 +78,9 @@ const useLogin = async (): Promise<void> => {
           </Message>
           <div class="start">
             <Button
-:disabled="pending" size="large" type="submit" :label="pending ? 'Attempting login...' : 'Login'"
-              @click="useLogin" />
+              :disabled="pending" size="large" type="submit" :label="pending ? 'Attempting login...' : 'Login'" />
           </div>
-        </div>
+        </form>
       </template>
     </Card>
     <AbsoluteFooter>

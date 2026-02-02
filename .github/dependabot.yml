@@ -12,7 +12,7 @@ updates:
       # pdfjs-dist v4+ uses modern JS not supported in Safari 14
       # See PR #109 for Safari 14 compatibility fix
       - dependency-name: "pdfjs-dist"
-        update-types: ["version-update:semver-major"]
+        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
     cooldown:
       default-days: 7
   - package-ecosystem: "github-actions"

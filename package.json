@@ -41,7 +41,7 @@
     "sass-embedded": "^1.97.3",
     "terser": "^5.46.0",
     "vue-eslint-parser": "^10.1.4",
-    "vue-tsc": "^3.2.3"
+    "vue-tsc": "^3.2.4"
   },
   "overrides": {
     "@nuxt/kit": "^4.2.1"

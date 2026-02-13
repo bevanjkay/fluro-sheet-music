@@ -137,6 +137,7 @@ onBeforeUnmount(() => {
       <swiper-container
         v-if="songStore.state.planSongs && songStore.state.planSongs.length"
         :direction="vertical ? 'vertical' : 'horizontal'"
+        keyboard="true"
       >
         <swiper-slide
           v-for="slide in allSlides"

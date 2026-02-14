@@ -1,27 +1,22 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
     groups:
       npm-dependencies:
         patterns:
           - "*"
-    ignore:
-      # pdfjs-dist v4+ uses modern JS not supported in Safari 14
-      # See PR #109 for Safari 14 compatibility fix
-      - dependency-name: "pdfjs-dist"
-        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
     cooldown:
       default-days: 7
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
     groups:
       gh-actions:
-        patterns: 
+        patterns:
           - "*"
     cooldown:
       default-days: 7

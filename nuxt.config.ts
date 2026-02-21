@@ -101,10 +101,7 @@ export default defineNuxtConfig({
     },
   },
   vite: {
-    plugins: [
-      legacy({
-        targets: ["safari >= 14", "ios >= 14", "defaults"],
-      }),
-    ],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    plugins: [legacy({ targets: ["safari >= 14", "ios >= 14", "defaults"] }) as any],
   },
 });

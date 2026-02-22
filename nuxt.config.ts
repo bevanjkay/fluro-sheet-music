@@ -2,6 +2,8 @@ import { definePreset } from "@primevue/themes";
 import Aura from "@primevue/themes/aura";
 import legacy from "@vitejs/plugin-legacy";
 
+const isCapacitorBuild = process.env.CAPACITOR_BUILD === "1";
+
 const customPreset = definePreset(Aura, {
   semantic: {
     primary: {
@@ -101,7 +103,13 @@ export default defineNuxtConfig({
     },
   },
   vite: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    plugins: [legacy({ targets: ["safari >= 14", "ios >= 14", "defaults"] }) as any],
+    plugins: isCapacitorBuild
+      ? []
+      : [
+        // Legacy output can break in WKWebView/Capacitor (System global missing).
+        // Keep it for web builds, disable for native wrapper builds.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        legacy({ targets: ["safari >= 14", "ios >= 14", "defaults"] }) as any,
+      ],
   },
 });

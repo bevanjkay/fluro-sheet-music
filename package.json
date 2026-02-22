@@ -4,7 +4,13 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "build:web": "nuxt generate",
+    "cap:add:android": "npx cap add android",
+    "cap:add:ios": "npx cap add ios",
     "check": "nuxt typecheck",
+    "cap:android": "npm run cap:sync && npx cap open android",
+    "cap:ios": "npm run cap:sync && npx cap open ios",
+    "cap:sync": "CAPACITOR_BUILD=1 npm run build:web && npx cap sync",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "lint": "eslint .",
@@ -13,6 +19,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@capacitor/android": "^7.5.0",
+    "@capacitor/cli": "^7.5.0",
+    "@capacitor/core": "^7.5.0",
+    "@capacitor/ios": "^7.5.0",
     "@nuxt/eslint": "^1.15.1",
     "@nuxt/fonts": "^0.13.0",
     "@nuxtjs/device": "^4.0.0",
@@ -26,25 +36,25 @@
     "nuxt-swiper": "^2.0.1",
     "pdfjs-dist": "^3.11.174",
     "primeicons": "^7.0.0",
-    "primevue": "^4.5.0",
+    "primevue": "^4.5.4",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^1.7.1",
+    "@nuxt/eslint-config": "^1.15.1",
     "@nuxt/types": "^2.18.1",
     "@nuxt/typescript-build": "^3.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@vitejs/plugin-legacy": "^7.2.1",
-    "eslint": "^10.0.0",
-    "eslint-plugin-vue": "^10.7.0",
+    "eslint": "^10.0.1",
+    "eslint-plugin-vue": "^10.8.0",
     "sass-embedded": "^1.97.3",
     "terser": "^5.46.0",
-    "vue-eslint-parser": "^10.1.4",
-    "vue-tsc": "^3.2.4"
+    "vue-eslint-parser": "^10.4.0",
+    "vue-tsc": "^3.2.5"
   },
   "overrides": {
-    "@nuxt/kit": "^4.2.1",
-    "tar": "^7.5.7"
+    "@nuxt/kit": "^4.3.1",
+    "tar": "^7.5.9"
   }
 }

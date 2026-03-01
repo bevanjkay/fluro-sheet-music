@@ -37,11 +37,13 @@ jobs:
 
       - name: Wait for preview route
         run: |
-          for i in $(seq 1 90); do
+          retries=90
+          while [ "$retries" -gt 0 ]; do
             if curl -fsS http://127.0.0.1:4173/ipad-sim >/dev/null; then
               exit 0
             fi
             sleep 2
+            retries=$((retries - 1))
           done
           echo "Nuxt route did not become ready in time"
           exit 1
@@ -73,7 +75,7 @@ jobs:
 
       - name: Upload screenshot artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ipad-sim-screenshot
           path: |

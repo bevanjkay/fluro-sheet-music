@@ -21,6 +21,9 @@ function navigateToLogin(to: RouteLocationNormalizedGeneric) {
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  if (to.path === "/ipad-sim") {
+    return;
+  }
 
   if (to.path === "/login") {
     if (isAuthenticated()) {

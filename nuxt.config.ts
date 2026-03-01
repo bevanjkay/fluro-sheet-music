@@ -53,7 +53,6 @@ const customPreset = definePreset(Aura, {
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
-    "nuxt-swiper",
     "@primevue/nuxt-module",
     "@pinia/nuxt",
     "@nuxt/eslint",

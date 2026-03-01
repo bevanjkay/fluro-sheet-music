@@ -23,17 +23,16 @@
     "@primevue/themes": "^4.5.4",
     "@vueuse/core": "^14.2.1",
     "nuxt": "^4.3.1",
-    "nuxt-swiper": "^2.0.1",
     "pdfjs-dist": "^3.11.174",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.0",
+    "swiper": "^12.1.2",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^1.7.1",
-    "@nuxt/types": "^2.18.1",
-    "@nuxt/typescript-build": "^3.0.2",
+    "@types/node": "^25.3.3",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@vitejs/plugin-legacy": "^7.2.1",
     "eslint": "^10.0.2",
@@ -44,7 +43,7 @@
     "vue-tsc": "^3.2.5"
   },
   "overrides": {
-    "@nuxt/kit": "^4.2.1",
+    "serialize-javascript": "^7.0.3",
     "tar": "^7.5.7"
   }
 }

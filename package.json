@@ -24,7 +24,7 @@
     "@vueuse/core": "^14.2.1",
     "nuxt": "^4.3.1",
     "nuxt-swiper": "^2.0.1",
-    "pdfjs-dist": "^3.11.174",
+    "pdfjs-dist": "^5.4.624",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.0",
     "vue": "latest",

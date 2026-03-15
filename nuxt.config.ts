@@ -52,8 +52,17 @@ const customPreset = definePreset(Aura, {
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  hooks: {
+    "pages:extend"(pages) {
+      if (!import.meta.dev) {
+        const index = pages.findIndex((page) => page.path === "/ipad-sim");
+        if (index !== -1) {
+          pages.splice(index, 1);
+        }
+      }
+    },
+  },
   modules: [
-    "nuxt-swiper",
     "@primevue/nuxt-module",
     "@pinia/nuxt",
     "@nuxt/eslint",

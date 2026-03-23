@@ -40,11 +40,15 @@ export const useAppBootstrap = () => {
       sheetStore.getSheets(),
     ])
       .then(() => {
-        status.value = "ready";
+        if (bootstrapPromise === request) {
+          status.value = "ready";
+        }
       })
       .catch((bootstrapError: unknown) => {
-        status.value = "error";
-        error.value = bootstrapError instanceof Error ? bootstrapError.message : "Unable to load app data";
+        if (bootstrapPromise === request) {
+          status.value = "error";
+          error.value = bootstrapError instanceof Error ? bootstrapError.message : "Unable to load app data";
+        }
         throw bootstrapError;
       })
       .finally(() => {

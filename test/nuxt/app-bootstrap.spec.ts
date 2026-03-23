@@ -82,4 +82,33 @@ describe("useAppBootstrap", () => {
     expect(songStoreMock.getSongs).not.toHaveBeenCalled();
     expect(sheetStoreMock.getSheets).not.toHaveBeenCalled();
   });
+
+  it("does not restore ready state after reset when an earlier bootstrap resolves", async () => {
+    let resolveSongs!: () => void;
+    let resolveSheets!: () => void;
+
+    songStoreMock.getSongs.mockImplementation(() => new Promise<void>((resolve) => {
+      resolveSongs = resolve;
+    }));
+    sheetStoreMock.getSheets.mockImplementation(() => new Promise<void>((resolve) => {
+      resolveSheets = resolve;
+    }));
+
+    const wrapper = await mountSuspended(BootstrapHarness);
+    const request = wrapper.vm.bootstrap();
+
+    expect(wrapper.vm.statusValue).toBe("pending");
+
+    wrapper.vm.reset();
+
+    expect(wrapper.vm.statusValue).toBe("idle");
+    expect(wrapper.vm.pendingValue).toBe(false);
+
+    resolveSongs();
+    resolveSheets();
+    await request;
+
+    expect(wrapper.vm.statusValue).toBe("idle");
+    expect(wrapper.vm.pendingValue).toBe(false);
+  });
 });

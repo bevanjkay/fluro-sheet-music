@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
@@ -46,6 +46,7 @@ describe("useSongStore", () => {
 
     const store = useSongStore();
     await store.getSongs();
+    await nextTick();
 
     expect(useAsyncFluroDataMock).toHaveBeenCalledWith("song", null, { sort: "title" });
     expect(store.state.songs).toEqual(fetchedSongs);

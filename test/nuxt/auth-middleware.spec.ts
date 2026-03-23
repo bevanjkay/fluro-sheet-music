@@ -5,9 +5,23 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const storageState = vi.hoisted(() => new Map<string, { value: User }>());
 const navigateToMock = vi.hoisted(() => vi.fn((path: string) => path));
 const fetchMock = vi.hoisted(() => vi.fn());
+const getUserSessionMock = vi.hoisted(() =>
+  vi.fn(async (user: User) => {
+    const response = await fetch("https://api.fluro.io/session", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${user.token}`,
+      },
+    });
+
+    return response.json();
+  }),
+);
 
 const mockNuxtExports = {
   defineNuxtRouteMiddleware: (handler: unknown) => handler,
+  getUserSession: getUserSessionMock,
   navigateTo: navigateToMock,
 };
 
@@ -32,11 +46,6 @@ vi.mock("@vueuse/core", async () => {
   };
 });
 
-vi.mock("#imports", () => ({
-  defineNuxtRouteMiddleware: (handler: unknown) => handler,
-  navigateTo: navigateToMock,
-}));
-
 describe("auth middleware", () => {
   beforeEach(() => {
     vi.resetModules();
@@ -44,6 +53,7 @@ describe("auth middleware", () => {
     localStorage.setItem("_fluro_user", JSON.stringify({ token: "", refreshToken: "" }));
     navigateToMock.mockClear();
     fetchMock.mockReset();
+    getUserSessionMock.mockClear();
     vi.stubGlobal("fetch", fetchMock);
   });
 

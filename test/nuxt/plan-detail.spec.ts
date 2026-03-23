@@ -46,10 +46,10 @@ describe("plan detail page", () => {
   });
 
   it("filters non-song schedules before seeding the viewer state", async () => {
-    const plan = {
+    const plan: Plan = {
       _id: "plan-1",
       title: "Sunday Service",
-      startDate: "2026-03-23T00:00:00.000Z",
+      startDate: new Date("2026-03-23T00:00:00.000Z"),
       schedules: [
         { _id: "song-1", title: "Amazing Grace", type: "song", key: "G" },
         { _id: "speaker-1", title: "Welcome", type: "hosting", key: "" },
@@ -74,7 +74,7 @@ describe("plan detail page", () => {
       },
     });
 
-    planRef.value = plan as never;
+    planRef.value = plan;
     await wrapper.vm.$nextTick();
     await wrapper.vm.$nextTick();
 

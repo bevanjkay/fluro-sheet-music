@@ -8,6 +8,7 @@ const username: Ref<string> = ref<string>("");
 const password: Ref<string> = ref<string>("");
 const error: Ref<string> = ref("");
 const pending: Ref<boolean> = ref(false);
+const { bootstrap, reset: resetBootstrap } = useAppBootstrap();
 
 onBeforeMount(() => {
   if (isAuthenticated()) {
@@ -28,12 +29,12 @@ const useLogin = async (): Promise<void> => {
       user.value.refreshToken = response.refreshToken;
 
       await getUserSession(user.value);
-      await Promise.all([
-        songStore.clearCache(),
-        sheetStore.clearCache(),
-        songStore.getSongs(),
-        sheetStore.getSheets()
-      ]);
+      songStore.clearCache();
+      sheetStore.clearCache();
+      resetBootstrap();
+      void bootstrap({ force: true }).catch((bootstrapError: unknown) => {
+        console.error("Error bootstrapping app data", bootstrapError);
+      });
       navigateTo({ path: "/", replace: true });
     }
     else {

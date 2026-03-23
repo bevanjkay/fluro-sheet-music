@@ -3,7 +3,6 @@ import { useStorage } from "@vueuse/core";
 import GlobalDialog from "@/components/GlobalDialog.vue";
 
 const user: Ref<User> = useStorage("_fluro_user", { token: "", refreshToken: "" });
-const loading: Ref<boolean> = ref(true);
 const darkMode: Ref<boolean> = useStorage("darkMode", false);
 
 useSeoMeta({
@@ -11,8 +10,7 @@ useSeoMeta({
   ogTitle: "Fluro Sheet Music Viewer",
 });
 
-const songStore = useSongStore();
-const sheetStore = useSheetStore();
+const { bootstrap, pending: bootstrapPending, reset: resetBootstrap } = useAppBootstrap();
 
 const setDarkMode = (value: boolean) => {
   const root = document.documentElement;
@@ -36,14 +34,14 @@ onMounted(async () => {
       life: 5000,
     });
   }
-  
-  if (user.value) {
-    await Promise.all([songStore.getSongs(), sheetStore.getSheets()]);
+
+  if (user.value.token) {
+    void bootstrap().catch((bootstrapError: unknown) => {
+      console.error("Error bootstrapping app data", bootstrapError);
+    });
   }
 
   setDarkMode(darkMode.value);
-  loading.value = false;
-
 });
 
 const menuItems = ref([
@@ -87,6 +85,7 @@ const logout = () => {
     message: "Are you sure you want to logout?",
     icon: "pi pi-exclamation-triangle",
     accept: () => {
+      resetBootstrap();
       user.value = {
         token: "",
         refreshToken: "",
@@ -109,6 +108,8 @@ const settings = () => {
 watch(darkMode, (value) => {
   setDarkMode(value);
 });
+
+const showBootstrapState = computed(() => Boolean(user.value.token) && bootstrapPending.value);
 </script>
 
 <template>
@@ -126,10 +127,20 @@ watch(darkMode, (value) => {
         </template>
       </Menubar>
     </div>
-    <page v-if="loading">
-      <Typography variant="h3" size="heading-md">Loading data...</Typography>
+    <page v-if="showBootstrapState" class="app-loading-state">
+      <Typography variant="h3" size="heading-md">Syncing library...</Typography>
       <ProgressSpinner />
     </page>
-    <NuxtPage v-if="!loading" />
+    <NuxtPage v-else />
   </div>
 </template>
+
+<style scoped>
+.app-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 6rem;
+}
+</style>

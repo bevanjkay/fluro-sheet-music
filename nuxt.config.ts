@@ -67,7 +67,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxt/eslint",
     "@nuxtjs/tailwindcss",
-    "@nuxt/fonts",
+    ...(process.env.NODE_ENV === "test" ? [] : ["@nuxt/fonts"]),
     "@nuxtjs/device",
   ],
   ssr: false,

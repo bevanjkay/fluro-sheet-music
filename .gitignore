@@ -5,6 +5,8 @@
 .nitro
 .cache
 dist
+coverage
+.nuxtrc
 
 # Node dependencies
 node_modules

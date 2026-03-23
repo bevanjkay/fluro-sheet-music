@@ -6,6 +6,12 @@ const songStore = useSongStore();
 
 const keySelection: Ref<Record<string, string | undefined>> = useStorage("keys", {});
 const vertical: Ref<boolean> = useStorage("vertical", false);
+const darkMode: Ref<boolean> = useStorage("darkMode", false);
+
+const pdfSurfaceClass = computed(() => ({
+  "pdf-surface": true,
+  "pdf-surface-dark": darkMode.value,
+}));
 
 const createURL = (sheet: Sheet) => {
   return `https://api.fluro.io/get/${sheet._id}`;
@@ -132,7 +138,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div>
+  <div :class="pdfSurfaceClass">
     <div class="pdf">
       <swiper-container
         v-if="songStore.state.planSongs && songStore.state.planSongs.length"
@@ -168,3 +174,19 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.pdf-surface {
+  min-height: 100vh;
+  background: #f4f4f4;
+}
+
+.pdf-surface-dark {
+  background: #1f1f1f;
+}
+
+.pdf-surface :deep(swiper-container),
+.pdf-surface :deep(swiper-slide) {
+  background: inherit;
+}
+</style>

@@ -6,6 +6,8 @@ import LoginPage from "~/pages/login.vue";
 const loginMock = vi.hoisted(() => vi.fn());
 const getUserSessionMock = vi.hoisted(() => vi.fn());
 const navigateToMock = vi.hoisted(() => vi.fn());
+const bootstrapMock = vi.hoisted(() => vi.fn(async () => {}));
+const resetBootstrapMock = vi.hoisted(() => vi.fn());
 
 const songStoreMock = vi.hoisted(() => ({
   clearCache: vi.fn(async () => {}),
@@ -25,6 +27,10 @@ vi.mock("~/utils/login", () => ({
 mockNuxtImport("useSongStore", () => () => songStoreMock);
 mockNuxtImport("useSheetStore", () => () => sheetStoreMock);
 mockNuxtImport("navigateTo", () => navigateToMock);
+mockNuxtImport("useAppBootstrap", () => () => ({
+  bootstrap: bootstrapMock,
+  reset: resetBootstrapMock,
+}));
 
 const InputTextStub = {
   props: ["modelValue", "name", "type", "disabled"],
@@ -50,15 +56,15 @@ describe("login flow", () => {
     loginMock.mockReset();
     getUserSessionMock.mockReset();
     navigateToMock.mockReset();
+    bootstrapMock.mockReset();
+    resetBootstrapMock.mockReset();
     songStoreMock.clearCache.mockClear();
-    songStoreMock.getSongs.mockClear();
     sheetStoreMock.clearCache.mockClear();
-    sheetStoreMock.getSheets.mockClear();
 
     vi.stubGlobal("navigateTo", navigateToMock);
   });
 
-  it("logs in successfully, warms caches, and redirects home", async () => {
+  it("logs in successfully, starts app bootstrap, and redirects home", async () => {
     loginMock.mockResolvedValue({
       token: "token-123",
       refreshToken: "refresh-123",
@@ -93,8 +99,8 @@ describe("login flow", () => {
     expect(getUserSessionMock).toHaveBeenCalledWith({ token: "token-123", refreshToken: "refresh-123" });
     expect(songStoreMock.clearCache).toHaveBeenCalled();
     expect(sheetStoreMock.clearCache).toHaveBeenCalled();
-    expect(songStoreMock.getSongs).toHaveBeenCalled();
-    expect(sheetStoreMock.getSheets).toHaveBeenCalled();
+    expect(resetBootstrapMock).toHaveBeenCalled();
+    expect(bootstrapMock).toHaveBeenCalledWith({ force: true });
     expect(JSON.parse(localStorage.getItem("_fluro_user") || "{}")).toEqual({
       token: "token-123",
       refreshToken: "refresh-123",
@@ -132,7 +138,6 @@ describe("login flow", () => {
 
     expect(wrapper.text()).toContain("Invalid username or password");
     expect(navigateToMock).not.toHaveBeenCalledWith({ path: "/", replace: true });
-    expect(songStoreMock.getSongs).not.toHaveBeenCalled();
-    expect(sheetStoreMock.getSheets).not.toHaveBeenCalled();
+    expect(bootstrapMock).not.toHaveBeenCalled();
   });
 });

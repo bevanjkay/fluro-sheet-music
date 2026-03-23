@@ -35,7 +35,7 @@ jobs:
         run: |
           node -e "const fs=require('fs'); const s=JSON.parse(fs.readFileSync('coverage/coverage-summary.json','utf8')).total; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Test coverage\n\n| Metric | Coverage |\n| --- | --- |\n| Lines | ' + s.lines.pct + '% |\n| Statements | ' + s.statements.pct + '% |\n| Functions | ' + s.functions.pct + '% |\n| Branches | ' + s.branches.pct + '% |\n')"
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: coverage-report
           path: coverage

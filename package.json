@@ -28,7 +28,7 @@
     "@primevue/nuxt-module": "^4.5.5",
     "@primevue/themes": "^4.5.4",
     "@vueuse/core": "^14.3.0",
-    "nuxt": "^4.4.6",
+    "nuxt": "^4.4.7",
     "pdfjs-dist": "^3.11.174",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.0",
@@ -55,6 +55,7 @@
   },
   "overrides": {
     "serialize-javascript": "^7.0.3",
-    "tar": "^7.5.7"
+    "tar": "^7.5.7",
+    "vite-plugin-checker": "^0.14.4"
   }
 }

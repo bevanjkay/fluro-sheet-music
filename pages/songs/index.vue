@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { navigateTo } from "#imports";
+
 const songStore = useSongStore();
 
 onMounted(() => {

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useStorage } from "@vueuse/core";
+import { navigateTo } from "#imports";
 
 const sheetStore = useSheetStore();
 const songStore = useSongStore();

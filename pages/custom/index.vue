@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useStorage } from "@vueuse/core";
+import { navigateTo, formatDate } from "#imports";
 
 const setlists: Ref<CustomSetlist[]> = useStorage("setlists", []);
 

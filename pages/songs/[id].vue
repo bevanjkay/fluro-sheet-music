@@ -8,6 +8,10 @@ const { data: song, status } = useFluroData("song", id) as { data: Ref<Song | nu
 const songStore = useSongStore();
 
 watch(() => song.value, () => {
+  if (!song.value) {
+    songStore.setPlanSongs([]);
+    return;
+  }
   songStore.setPlanSongs([song.value as unknown as PlanSong]);
 });
 

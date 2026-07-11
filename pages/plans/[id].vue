@@ -9,7 +9,10 @@ const { data: plan, status } = useFluroData("plan", id) as { data: Ref<Plan>, st
 const songStore = useSongStore();
 
 watch(() => plan.value, () => {
-
+  if (!plan.value?.schedules) {
+    songStore.setPlanSongs([]);
+    return;
+  }
   const planSongs: PlanSong[] = plan.value.schedules.filter((schedule: Schedule) => schedule.type == "song");
   songStore.setPlanSongs(planSongs);
 });

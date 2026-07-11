@@ -28,7 +28,6 @@ const addSongs = () => {
 };
 
 const removeSong = (id: string) => {
-  console.log(id);
   setlistForm.value.songs = setlistForm.value.songs.filter((s: PlanSong) => s._id !== id);
 };
 
@@ -38,7 +37,10 @@ const keys: string[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A
 
 const error: Ref<string> = ref("");
 
+const editingId: Ref<string | null> = ref(null);
+
 const createSetlist = (): void => {
+  error.value = "";
   const id = setlistForm.value.title.toLowerCase().replace(/\s/g, "-");
 
   if (!setlistForm.value.title) {
@@ -46,7 +48,7 @@ const createSetlist = (): void => {
     return;
   }
 
-  if (setlists.value.find(s => s._id === id) && !edit.value) {
+  if (setlists.value.find(s => s._id === id) && id !== editingId.value) {
     error.value = "A setlist with that name already exists, please choose a different name";
     return;
   }
@@ -58,7 +60,7 @@ const createSetlist = (): void => {
   setlistForm.value.created = new Date();
 
   if (edit.value) {
-    setlists.value = setlists.value.filter(s => s._id !== id);
+    setlists.value = setlists.value.filter(s => s._id !== editingId.value);
   }
 
   setlists.value = [...setlists.value, { ...setlistForm.value, _id: id }];
@@ -72,12 +74,15 @@ const createSetlist = (): void => {
 
   create.value = false;
   edit.value = false;
+  editingId.value = null;
 };
 
 const editSetlist = (setlist: CustomSetlist): void => {
   create.value = true;
   edit.value = true;
-  setlistForm.value = setlist;
+  editingId.value = setlist._id;
+  // Clone so cancelling the edit doesn't leave changes on the saved setlist
+  setlistForm.value = { ...setlist, songs: setlist.songs.map(song => ({ ...song })) };
 };
 
 const deleting: Ref<Record<string, boolean>> = ref({});
@@ -100,6 +105,8 @@ const clear = () => {
   };
   create.value = false;
   edit.value = false;
+  editingId.value = null;
+  error.value = "";
 };
 </script>
 

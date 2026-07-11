@@ -2,15 +2,13 @@
 import { useStorage } from "@vueuse/core";
 import type { RemovableRef } from "@vueuse/core";
 import * as pdfjsLib from "pdfjs-dist";
-import type { PDFDocumentProxy } from "pdfjs-dist";
 
 // Use CDN for worker - v3.x for Safari 14 compatibility
 if (typeof window !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
 }
 
-// Module-level caches for PDF documents and rendered pages
-const pdfDocCache = new Map<string, PDFDocumentProxy>();
+// Module-level cache for rendered pages; documents are cached in utils/pdfDocumentCache
 const renderedPageCache = new Map<string, string>();
 const MAX_CACHE_SIZE = 20;
 
@@ -48,7 +46,7 @@ const lastEmittedSheet = ref("");
 const HEADER_HEIGHT = 80;
 const MAX_SCALE = 2.5;
 
-// Helper to manage cache size
+// Helper to manage rendered-page cache size
 function pruneCache(cache: Map<string, unknown>, maxSize: number): void {
   if (cache.size > maxSize) {
     const keysToDelete = Array.from(cache.keys()).slice(0, cache.size - maxSize);
@@ -86,9 +84,9 @@ const renderPdfToImage = async () => {
 
     // Still need to emit data if sheet changed
     if (props.sheetId !== lastEmittedSheet.value || !hasEmittedData.value) {
-      const cachedDoc = pdfDocCache.get(props.source);
-      if (cachedDoc) {
-        emit("data", { id: props.song, numPages: cachedDoc.numPages, sheetId: props.sheetId });
+      const cachedEntry = getCachedPdfDocument(props.source);
+      if (cachedEntry?.numPages !== undefined) {
+        emit("data", { id: props.song, numPages: cachedEntry.numPages, sheetId: props.sheetId });
         hasEmittedData.value = true;
         lastEmittedSheet.value = props.sheetId;
       }
@@ -99,20 +97,16 @@ const renderPdfToImage = async () => {
   isLoading.value = true;
   hasError.value = false;
 
+  // Hold a reference while rendering so an evicted document isn't
+  // destroyed mid-render; released in the finally block below
+  const entry = acquirePdfDocument(props.source, () => {
+    const url = `${props.source}?access_token=${user.value.token}`;
+    // isEvalSupported: false mitigates CVE-2024-4367 while staying on v3.x for Safari 14
+    return pdfjsLib.getDocument({ url, isEvalSupported: false }).promise;
+  });
+
   try {
-    // Try to get PDF document from cache, or load it
-    let pdfDoc = pdfDocCache.get(props.source);
-
-    if (!pdfDoc) {
-      const url = `${props.source}?access_token=${user.value.token}`;
-      // isEvalSupported: false mitigates CVE-2024-4367 while staying on v3.x for Safari 14
-      const loadingTask = pdfjsLib.getDocument({ url, isEvalSupported: false });
-      pdfDoc = await loadingTask.promise;
-
-      // Cache the document
-      pruneCache(pdfDocCache, MAX_CACHE_SIZE);
-      pdfDocCache.set(props.source, pdfDoc);
-    }
+    const pdfDoc = await entry.promise;
 
     if (props.sheetId !== lastEmittedSheet.value || !hasEmittedData.value) {
       emit("data", { id: props.song, numPages: pdfDoc.numPages, sheetId: props.sheetId });
@@ -162,6 +156,8 @@ const renderPdfToImage = async () => {
     console.error("Error rendering PDF:", error);
     hasError.value = true;
     isLoading.value = false;
+  } finally {
+    releasePdfDocument(entry);
   }
 };
 

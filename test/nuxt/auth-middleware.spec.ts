@@ -28,6 +28,7 @@ const mockNuxtExports = {
 vi.mock("nuxt/app", () => mockNuxtExports);
 vi.mock("#app", () => mockNuxtExports);
 vi.mock("#imports", () => mockNuxtExports);
+vi.mock("#app/composables/router", () => mockNuxtExports);
 
 vi.mock("@vueuse/core", async () => {
   const actual = await vi.importActual<typeof import("@vueuse/core")>("@vueuse/core");
@@ -70,6 +71,7 @@ describe("auth middleware", () => {
     fetchMock
       .mockRejectedValueOnce(new Error("expired"))
       .mockResolvedValueOnce({
+        ok: true,
         json: async () => ({ token: "fresh-token" }),
       });
 
@@ -80,5 +82,23 @@ describe("auth middleware", () => {
     expect(fetchMock).toHaveBeenCalledWith("https://api.fluro.io/token/refresh", expect.any(Object));
     expect(storageState.get("_fluro_user")?.value.token).toBe("fresh-token");
     expect(navigateToMock).not.toHaveBeenCalledWith("/login");
+  });
+
+  it("clears credentials and redirects to login when the token refresh is rejected", async () => {
+    localStorage.setItem("_fluro_user", JSON.stringify({ token: "expired-token", refreshToken: "refresh-123" }));
+    fetchMock
+      .mockRejectedValueOnce(new Error("expired"))
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: async () => ({ error: "invalid refresh token" }),
+      });
+
+    const middleware = (await import("~/middleware/auth.global")).default;
+    const result = await middleware({ path: "/songs" } as never, { path: "/" } as never);
+
+    expect(result).toBe("/login");
+    expect(storageState.get("_fluro_user")?.value.token).toBe("");
+    expect(storageState.get("_fluro_user")?.value.refreshToken).toBe("");
   });
 });

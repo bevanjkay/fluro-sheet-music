@@ -19,7 +19,6 @@ export const login = async (username: string, password: string) => {
 };
 
 export const refresh = async (refreshToken: string) => {
-  console.log("Received refresh token", refreshToken);
   const response = await fetch("https://api.fluro.io/token/refresh", {
     method: "POST",
     headers: {
@@ -29,6 +28,9 @@ export const refresh = async (refreshToken: string) => {
       refreshToken,
     }),
   });
+  if (!response.ok) {
+    throw new Error(`Token refresh failed (${response.status})`);
+  }
   const data = await response.json();
   return data;
 };

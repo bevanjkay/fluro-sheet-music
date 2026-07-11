@@ -34,11 +34,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   try {
 
-    console.log("Checking user session", user.value);
-
     const response = await getUserSession(user.value);
 
-    console.log("User session response", response);
     if (response.error) {
       return navigateToLogin(to);
     }
@@ -50,8 +47,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (user.value.refreshToken) {
 
       try {
-        console.info("Refreshing token", user.value.refreshToken);
         const response = await refresh(user.value.refreshToken);
+        if (!response.token) {
+          throw new Error("No token returned from refresh", { cause: sessionError });
+        }
         user.value.token = response.token;
       } catch (refreshError) {
         console.error("Error refreshing token", refreshError);

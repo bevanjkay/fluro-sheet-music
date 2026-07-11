@@ -10,7 +10,6 @@ const songStore = useSongStore();
 songStore.setPlanSongs(setlist.value?.songs || []);
 
 watch(() => setlist.value, () => {
-  console.log("setlist changed");
   if (setlist.value) {
     songStore.setPlanSongs(setlist.value.songs);
   }

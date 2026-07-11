@@ -169,6 +169,61 @@ describe("custom setlist editor", () => {
     expect(JSON.parse(localStorage.getItem("setlists") || "[]")).toHaveLength(1);
   });
 
+  it("renames a setlist without leaving the old entry behind", async () => {
+    localStorage.setItem("setlists", JSON.stringify([
+      {
+        _id: "team-night",
+        title: "Team Night",
+        songs: [{ _id: "song-1", title: "Amazing Grace", key: "C", type: "song" }],
+        created: "2026-03-23T00:00:00.000Z",
+      },
+    ]));
+
+    const wrapper = await mountPage();
+
+    await wrapper.findAll("button").find((button) => button.text() === "Edit Setlist")!.trigger("click");
+    await nextTick();
+    await wrapper.get("input[name='title']").setValue("Sunday AM");
+    await wrapper.findAll("button").find((button) => button.text() === "Update Setlist")!.trigger("click");
+    await nextTick();
+
+    const savedSetlists = JSON.parse(localStorage.getItem("setlists") || "[]");
+
+    expect(savedSetlists).toHaveLength(1);
+    expect(savedSetlists[0]).toEqual(expect.objectContaining({
+      _id: "sunday-am",
+      title: "Sunday AM",
+    }));
+  });
+
+  it("rejects renaming a setlist to another setlist's name", async () => {
+    localStorage.setItem("setlists", JSON.stringify([
+      {
+        _id: "team-night",
+        title: "Team Night",
+        songs: [{ _id: "song-1", title: "Amazing Grace", key: "C", type: "song" }],
+        created: "2026-03-23T00:00:00.000Z",
+      },
+      {
+        _id: "sunday-am",
+        title: "Sunday AM",
+        songs: [{ _id: "song-1", title: "Amazing Grace", key: "C", type: "song" }],
+        created: "2026-03-23T00:00:00.000Z",
+      },
+    ]));
+
+    const wrapper = await mountPage();
+
+    await wrapper.findAll("button").find((button) => button.text() === "Edit Setlist")!.trigger("click");
+    await nextTick();
+    await wrapper.get("input[name='title']").setValue("Sunday AM");
+    await wrapper.findAll("button").find((button) => button.text() === "Update Setlist")!.trigger("click");
+    await nextTick();
+
+    expect(wrapper.text()).toContain("A setlist with that name already exists, please choose a different name");
+    expect(JSON.parse(localStorage.getItem("setlists") || "[]")).toHaveLength(2);
+  });
+
   it("deletes a saved setlist after confirmation", async () => {
     localStorage.setItem("setlists", JSON.stringify([
       {

@@ -49,6 +49,7 @@
     "happy-dom": "^20.14.0",
     "sass-embedded": "^1.104.0",
     "terser": "^5.51.2",
+    "typescript": "^5.9.3",
     "vitest": "^4.1.11",
     "vue-eslint-parser": "^10.1.4",
     "vue-tsc": "^3.3.11"

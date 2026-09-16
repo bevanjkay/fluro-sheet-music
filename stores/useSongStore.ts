@@ -18,8 +18,8 @@ export const useSongStore = defineStore("songStore", () => {
     }
 
     try {
-      const { data } = await useAsyncFluroData("song", null, { sort: "title" }) as { data: Ref<Song[]> };
-      state.songs = data.value;
+      const { data } = await useAsyncFluroData("song", null, { sort: "title" }) as { data?: Ref<Song[] | null> };
+      state.songs = toRaw(data?.value) ?? [];
     }
     catch (error) {
       console.error("Error fetching songs", error);

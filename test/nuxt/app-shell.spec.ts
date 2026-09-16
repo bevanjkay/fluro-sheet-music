@@ -83,9 +83,9 @@ describe("app shell", () => {
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     expect(wrapper.find("[data-test='nuxt-page']").exists()).toBe(true);
 
-    const settingsButton = wrapper.findAll("button").find((button) => button.text() === "Settings");
-    expect(settingsButton).toBeDefined();
-    await settingsButton!.trigger("click");
+    const settingsButton = wrapper.find("button[aria-label='Settings']");
+    expect(settingsButton.exists()).toBe(true);
+    await settingsButton.trigger("click");
     expect(dialogOpenMock).toHaveBeenCalled();
   });
 
@@ -107,9 +107,9 @@ describe("app shell", () => {
       },
     });
 
-    const logoutButton = wrapper.findAll("button").find((button) => button.text() === "Logout");
-    expect(logoutButton).toBeDefined();
-    await logoutButton!.trigger("click");
+    const logoutButton = wrapper.find("button[aria-label='Logout']");
+    expect(logoutButton.exists()).toBe(true);
+    await logoutButton.trigger("click");
 
     expect(confirmRequireMock).toHaveBeenCalledWith(expect.objectContaining({
       header: "Logout",

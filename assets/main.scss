@@ -1,29 +1,40 @@
-html {
-  font-size: 14px;
+:root {
+  --app-header-height: 5rem;
+  --app-surface: #ffffff;
+  --app-ink: #18181b;
+  --app-selection: #d4d4d8;
 }
 
-.card {
-  width: clamp(200px, 95vw, 450px);
+.dark {
+  --app-surface: #09090b;
+  --app-ink: #fafafa;
+  --app-selection: #3f3f46;
+}
+
+html {
+  // Tailwind's scale is designed around a 16px root; the previous 14px override
+  // shrank every size at once, which reads badly at arm's length on stage.
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 body {
   font-family: "Mona Sans", sans-serif;
+  background: var(--app-surface);
+  color: var(--app-ink);
 }
 
-canvas {
-  margin-top: 4em;
-  max-height: calc(100vh - 60px);
-  max-width: 100%;
-  width: auto !important;
+::selection {
+  background: var(--app-selection);
+  color: var(--app-ink);
 }
 
-.dark {
-
-  .pdf {
-    filter: invert(0.9) grayscale(0.9);
-  }
+.dark .pdf {
+  filter: invert(0.9) grayscale(0.9);
 }
-
 
 .image-w-placeholder {
   position: relative;
@@ -41,4 +52,3 @@ canvas {
     background: #eee;
   }
 }
-

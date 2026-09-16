@@ -1,8 +1,17 @@
 import { useStorage } from "@vueuse/core";
 
+// Weekday first: on stage the useful question is "is this the Sunday one?",
+// which a numeric date cannot answer at a glance.
 export const formatDate = (date: Date | null) => {
   if (!date) return "";
-  return new Date(date).toLocaleDateString();
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString(undefined, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 };
 
 export function isAuthenticated(): boolean {

@@ -143,7 +143,7 @@ describe("GlobalDialog", () => {
       },
     });
 
-    expect(wrapper.text()).toContain("Current cache size: 2 KB");
+    expect(wrapper.text()).toContain("Cached songs and sheets use 2 KB");
 
     await wrapper.get("[data-test='key-select']").setValue("sheet-2");
     await wrapper.get("[data-test='scroll-direction']").setValue("true");

@@ -19,7 +19,7 @@ const open = computed({
         <DialogTitle class="sr-only">Options</DialogTitle>
         <DialogDescription class="sr-only">Application display and storage options</DialogDescription>
         <DialogClose
-          class="absolute right-4 top-4 rounded p-1 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+          class="absolute right-3 top-3 inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
           aria-label="Close dialog"
         >
           <AppIcon name="times" :size="18" />

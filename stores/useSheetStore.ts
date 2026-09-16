@@ -15,8 +15,8 @@ export const useSheetStore = defineStore("sheetStore", () => {
       return;
     }
 
-    const { data } = await useAsyncFluroData("sheetMusic") as { data: Ref<Sheet[]> };
-    state.sheets = data.value;
+    const { data } = await useAsyncFluroData("sheetMusic") as { data?: Ref<Sheet[] | null> };
+    state.sheets = toRaw(data?.value) ?? [];
   }
 
   function getSheet(id: string) {

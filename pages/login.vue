@@ -67,14 +67,14 @@ const useLogin = async (): Promise<void> => {
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="useLogin">
           <FloatLabel variant="in">
-            <InputText v-model="username" :disabled="pending" size="large" name="username" type="text" />
+            <InputText id="username" v-model="username" :disabled="pending" size="large" name="username" type="text" />
             <label for="username">Username</label>
           </FloatLabel>
           <FloatLabel variant="in">
-            <Password v-model="password" :disabled="pending" size="large" name="password" :feedback="false" />
+            <Password id="password" v-model="password" :disabled="pending" size="large" name="password" />
             <label for="password">Password</label>
           </FloatLabel>
-          <Message v-if="error" severity="error" icon="pi pi-times-circle" class="mb-2">
+          <Message v-if="error" severity="error" icon="times-circle" class="mb-2">
             {{ error }}
           </Message>
           <div class="start">

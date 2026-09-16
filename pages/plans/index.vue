@@ -21,9 +21,8 @@ useSeoMeta({
       <div class="flex flex-col gap-4 mt-8">
         <Card v-for="service in serviceStore.state.services" :key="service._id" class="card">
           <template #header>
-            <Image
-v-if="service.mainImage" class="image-w-placeholder"
-              :src="`https://api.fluro.io/get/${service.mainImage._id}`" />
+            <div v-if="service.mainImage" class="image-w-placeholder">
+              <img :src="`https://api.fluro.io/get/${service.mainImage._id}`" :alt="service.title"></div>
           </template>
           <template #title>
             {{ service.title }}

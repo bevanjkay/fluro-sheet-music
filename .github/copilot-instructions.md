@@ -6,7 +6,7 @@ This is a **Nuxt 3** application that provides a sheet music viewer for the Flur
 
 ### Key Technologies
 - **Nuxt 3** with TypeScript and Vue 3 Composition API
-- **Tailwind CSS** for styling with **PrimeVue** components
+- **Tailwind CSS** for styling with **Reka UI** headless primitives
 - **Pinia** for state management
 - **VueUse** for Vue composables
 - **PDF.js** for sheet music rendering
@@ -45,8 +45,8 @@ This is a **Nuxt 3** application that provides a sheet music viewer for the Flur
 
 ### Styling
 - Use Tailwind CSS utility classes primarily
-- PrimeVue components for complex UI elements
-- Custom theme configuration in `nuxt.config.ts`
+- Local components in `components/` wrap Reka UI primitives for complex UI elements
+- Icons are inline SVG via `components/AppIcon.vue`
 - Dark mode support via CSS classes and VueUse storage
 
 ### State Management
@@ -168,7 +168,7 @@ Currently no automated tests are configured. When adding tests, consider:
 - ESLint configured with strict rules (semicolons, double quotes)
 - TypeScript strict mode enabled
 - SSR disabled (`ssr: false`) for client-side rendering
-- Tailwind CSS with custom PrimeVue theme integration
+- Tailwind CSS v3 with `darkMode: "class"` (see `tailwind.config.ts`)
 
 ## API Data Types
 
@@ -200,7 +200,7 @@ Currently no automated tests are configured. When adding tests, consider:
 
 - Remember to handle token refresh on API failures
 - VueUse storage is reactive - watch for changes appropriately
-- PrimeVue components may need specific CSS imports
+- Browser floor is Safari/iOS 14; avoid CSS `:has()`, `color-mix()` and Tailwind v4
 - PDF rendering requires proper error handling for missing files
 - Dark mode changes require manual DOM class management
 

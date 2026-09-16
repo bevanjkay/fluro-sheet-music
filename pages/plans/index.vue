@@ -5,10 +5,14 @@ const serviceStore = useServiceStore();
 
 // Tracks "the fetch finished" so an empty result reads as empty, not loading.
 const loaded = ref(false);
-onMounted(async () => {
+
+const load = async () => {
+  loaded.value = false;
   await serviceStore.getServices();
   loaded.value = true;
-});
+};
+
+onMounted(load);
 
 useSeoMeta({
   title: "Service Plans • Fluro Sheet Music Viewer",
@@ -55,6 +59,17 @@ useSeoMeta({
     <div v-else-if="!loaded" class="flex flex-col items-center gap-4 py-20">
       <ProgressSpinner />
       <p class="text-sm text-zinc-500 dark:text-zinc-400">Loading services...</p>
+    </div>
+
+    <div v-else-if="serviceStore.state.error" class="rounded-xl border border-dashed border-red-300 px-5 py-12 text-center dark:border-red-900">
+      <Typography variant="h2" size="heading-sm">Could not load services</Typography>
+      <p class="mx-auto mt-2 max-w-md text-sm text-zinc-500 dark:text-zinc-400">
+        {{ serviceStore.state.error }}. Your songs and setlists are still available offline.
+      </p>
+      <div class="mt-5 flex flex-wrap justify-center gap-2">
+        <Button label="Try again" @click="load" />
+        <Button label="Browse songs" severity="secondary" to="/songs" />
+      </div>
     </div>
 
     <div v-else class="rounded-xl border border-dashed border-zinc-300 px-5 py-12 text-center dark:border-zinc-700">

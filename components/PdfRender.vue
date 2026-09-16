@@ -50,6 +50,7 @@ const MIN_RESCALE_DELTA = 0.05;
 
 const surface = ref<HTMLElement | null>(null);
 const renderedScale = ref(0);
+let renderToken = 0;
 const pageSize = ref<{ width: number, height: number } | null>(null);
 
 // Helper to manage rendered-page cache size
@@ -78,6 +79,9 @@ const renderPdfToImage = async () => {
     return;
   }
 
+  const token = ++renderToken;
+  const isStale = () => token !== renderToken;
+
   isLoading.value = true;
   hasError.value = false;
 
@@ -91,6 +95,7 @@ const renderPdfToImage = async () => {
 
   try {
     const pdfDoc = await entry.promise;
+    if (isStale()) return;
 
     if (props.sheetId !== lastEmittedSheet.value || !hasEmittedData.value) {
       emit("data", { id: props.song, numPages: pdfDoc.numPages, sheetId: props.sheetId });
@@ -99,6 +104,8 @@ const renderPdfToImage = async () => {
     }
 
     const page = await pdfDoc.getPage(props.page);
+    if (isStale()) return;
+
     const viewport = page.getViewport({ scale: 1.0 });
 
     pageSize.value = { width: viewport.width, height: viewport.height };
@@ -113,7 +120,6 @@ const renderPdfToImage = async () => {
       return;
     }
 
-    renderedScale.value = rasterScale;
     const scaledViewport = page.getViewport({ scale: rasterScale });
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
@@ -131,14 +137,18 @@ const renderPdfToImage = async () => {
     }).promise;
 
     const renderedImage = canvas.toDataURL("image/jpeg", 0.92);
-    imageDataUrl.value = renderedImage;
 
-    // Cache the rendered page under the scale it was rasterised at
+    // Cache regardless of staleness; the raster is valid for its scale key
     pruneCache(renderedPageCache, MAX_CACHE_SIZE * 3);
     renderedPageCache.set(pageCacheKey, renderedImage);
 
+    if (isStale()) return;
+
+    imageDataUrl.value = renderedImage;
+    renderedScale.value = rasterScale;
     isLoading.value = false;
   } catch (error) {
+    if (isStale()) return;
     console.error("Error rendering PDF:", error);
     hasError.value = true;
     isLoading.value = false;

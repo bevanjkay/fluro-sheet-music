@@ -185,7 +185,6 @@ const clear = () => {
               <td class="px-4 py-2.5 text-right">
                 <Button
                   severity="secondary"
-                  size="small"
                   icon="trash"
                   :aria-label="`Remove ${song.title}`"
                   @click="removeSong(song._id)"

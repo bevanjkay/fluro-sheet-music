@@ -51,6 +51,32 @@ describe("stores tolerate an unusable response", () => {
     expect(store.state.services).toEqual([]);
   });
 
+  it("records a failure so an error is not shown as an empty list", async () => {
+    useAsyncFluroDataMock.mockRejectedValue(new Error("Network down"));
+
+    const store = useServiceStore();
+    await store.getServices();
+
+    expect(store.state.services).toEqual([]);
+    expect(store.state.error).toBe("Network down");
+  });
+
+  it("clears a previous failure on a successful retry", async () => {
+    const store = useServiceStore();
+
+    useAsyncFluroDataMock.mockRejectedValueOnce(new Error("Network down"));
+    await store.getServices();
+    expect(store.state.error).toBe("Network down");
+
+    useAsyncFluroDataMock.mockResolvedValue({
+      data: ref([{ _id: "s1", title: "Sunday", startDate: "2026-01-01", plans: [{ _id: "p1", title: "Main" }] }]),
+    });
+    await store.getServices();
+
+    expect(store.state.error).toBeNull();
+    expect(store.state.services).toHaveLength(1);
+  });
+
   it("skips services that have no plans attached", async () => {
     useAsyncFluroDataMock.mockResolvedValue({
       data: ref([

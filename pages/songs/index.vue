@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 const songStore = useSongStore();
 
-onMounted(() => {
+const loaded = ref(false);
+
+onMounted(async () => {
   if (songStore.state.songs.length === 0) {
-    songStore.getSongs();
-  };
+    await songStore.getSongs();
+  }
+  loaded.value = true;
 });
 
 const query = ref("");
@@ -44,8 +47,12 @@ useSeoMeta({
       >
     </div>
 
-    <p v-if="!songStore.state.songs.length" class="rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-center text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-      Your song library is still syncing.
+    <div v-if="!songStore.state.songs.length && !loaded" class="flex flex-col items-center gap-4 py-16">
+      <ProgressSpinner />
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">Loading songs...</p>
+    </div>
+    <p v-else-if="!songStore.state.songs.length" class="rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-center text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+      No songs in your library yet. Songs appear here once they have sheet music attached in Fluro.
     </p>
     <p v-else-if="!filteredSongs.length" class="rounded-xl border border-dashed border-zinc-300 px-5 py-10 text-center text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
       No songs match &ldquo;{{ query }}&rdquo;.

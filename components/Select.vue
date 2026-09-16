@@ -41,7 +41,7 @@ const selectedLabel = computed(() => {
   >
     <SelectTrigger
       :aria-label="ariaLabel"
-      class="inline-flex w-full items-center justify-between gap-2 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400 disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-50"
+      class="inline-flex min-h-[44px] w-full items-center justify-between gap-2 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400 disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-50"
     >
       <SelectValue :placeholder="placeholder">
         <span :class="{ 'text-zinc-500 dark:text-zinc-400': !selectedLabel }">

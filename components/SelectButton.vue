@@ -30,7 +30,7 @@ const labelOf = (option: Option) => String(option[props.optionLabel]);
       type="button"
       :disabled="disabled"
       :aria-pressed="modelValue === valueOf(option)"
-      class="rounded px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-60"
+      class="min-h-[44px] min-w-[44px] rounded px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-60"
       :class="modelValue === valueOf(option)
         ? 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900'
         : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800'"

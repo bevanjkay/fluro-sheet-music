@@ -48,6 +48,7 @@ const menuItems = ref([
   {
     label: "Home",
     icon: "home",
+    to: "/",
     command: () => {
       navigateTo("/");
     },
@@ -55,6 +56,7 @@ const menuItems = ref([
   {
     label: "Service Plans",
     icon: "calendar",
+    to: "/plans",
     command: () => {
       navigateTo("/plans");
     },
@@ -62,6 +64,7 @@ const menuItems = ref([
   {
     label: "Songs",
     icon: "list",
+    to: "/songs",
     command: () => {
       navigateTo("/songs");
     },
@@ -69,6 +72,7 @@ const menuItems = ref([
   {
     label: "Custom Setlists",
     icon: "grid",
+    to: "/custom",
     command: () => {
       navigateTo("/custom");
     },
@@ -118,12 +122,16 @@ const showBootstrapState = computed(() => Boolean(user.value.token) && bootstrap
     <DynamicDialog />
     <ConfirmDialog />
     <Toast />
-    <div class="absolute p-2 z-20 w-full">
-      <Menubar v-if="user?.token" class="w-full" :model="menuItems">
+    <div v-if="user?.token" class="app-header">
+      <Menubar class="w-full" :model="menuItems">
         <template #end>
-          <div class="flex flex-row gap-4">
-            <Button icon="settings" variant="text" label="Settings" severity="secondary" @click="settings" />
-            <Button label="Logout" icon="sign-out" @click="logout" />
+          <div class="flex flex-row items-center gap-2">
+            <Button icon="settings" variant="text" severity="secondary" aria-label="Settings" @click="settings">
+              <span class="hidden sm:inline">Settings</span>
+            </Button>
+            <Button icon="sign-out" aria-label="Logout" @click="logout">
+              <span class="hidden sm:inline">Logout</span>
+            </Button>
           </div>
         </template>
       </Menubar>
@@ -137,6 +145,15 @@ const showBootstrapState = computed(() => Boolean(user.value.token) && bootstrap
 </template>
 
 <style scoped>
+.app-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+  padding: 0.5rem;
+}
+
 .app-loading-state {
   display: flex;
   flex-direction: column;

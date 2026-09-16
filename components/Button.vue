@@ -31,22 +31,24 @@ const slots = useSlots();
 
 const iconOnly = computed(() => Boolean(props.icon) && !props.label && !slots.default);
 
+// Minimum heights keep every control at a comfortable touch target; this app
+// is used on an iPad by people holding an instrument.
 const SIZES: Record<string, string> = {
-  small: "text-xs gap-1.5",
-  normal: "text-sm gap-2",
-  large: "text-base gap-2",
+  small: "text-xs gap-1.5 min-h-[36px]",
+  normal: "text-sm gap-2 min-h-[44px]",
+  large: "text-base gap-2 min-h-[48px]",
 };
 
 const PADDING: Record<string, string> = {
   small: "px-2.5 py-1.5",
-  normal: "px-3.5 py-2",
-  large: "px-4 py-2.5",
+  normal: "px-4 py-2",
+  large: "px-5 py-2.5",
 };
 
 const ICON_PADDING: Record<string, string> = {
-  small: "p-1.5",
-  normal: "p-2",
-  large: "p-2.5",
+  small: "p-1.5 min-w-[36px]",
+  normal: "p-2 min-w-[44px]",
+  large: "p-2.5 min-w-[48px]",
 };
 
 const SOLID: Record<Severity, string> = {
@@ -77,7 +79,7 @@ const classes = computed(() => {
   return [
     "inline-flex items-center justify-center font-medium transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2",
-    "disabled:opacity-60 disabled:pointer-events-none",
+    "disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none",
     "dark:focus-visible:ring-offset-zinc-900",
     props.rounded ? "rounded-full" : "rounded-md",
     SIZES[props.size],

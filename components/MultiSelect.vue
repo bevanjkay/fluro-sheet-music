@@ -6,6 +6,7 @@ const props = withDefaults(defineProps<{
   placeholder?: string
   filter?: boolean
   disabled?: boolean
+  ariaLabel?: string
 }>(), {
   modelValue: () => [] as T[],
   options: () => [] as T[],
@@ -13,6 +14,7 @@ const props = withDefaults(defineProps<{
   placeholder: "Select options",
   filter: false,
   disabled: false,
+  ariaLabel: undefined,
 });
 
 const emit = defineEmits<{ (e: "update:modelValue", value: T[]): void }>();
@@ -46,6 +48,7 @@ const triggerLabel = computed(() => {
   >
     <ComboboxAnchor>
       <ComboboxTrigger
+        :aria-label="ariaLabel ?? placeholder"
         class="inline-flex w-full min-w-[16rem] items-center justify-between gap-2 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400 disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-50"
       >
         <span :class="{ 'text-zinc-500 dark:text-zinc-400': modelValue.length === 0 }">{{ triggerLabel }}</span>

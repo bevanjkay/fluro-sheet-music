@@ -109,9 +109,9 @@ describe("custom setlist editor", () => {
     await wrapper.get("button").trigger("click");
     await wrapper.get("input[name='title']").setValue("Team Night");
     await wrapper.get("[data-test='pick-song-1']").trigger("click");
-    await wrapper.findAll("button").find((button) => button.text().includes("Add Selected Songs"))!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text().includes("to setlist"))!.trigger("click");
     await nextTick();
-    await wrapper.findAll("button").find((button) => button.text() === "Create Setlist")!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text() === "Create setlist")!.trigger("click");
     await nextTick();
 
     const savedSetlists = JSON.parse(localStorage.getItem("setlists") || "[]");
@@ -145,15 +145,15 @@ describe("custom setlist editor", () => {
 
     await wrapper.get("button").trigger("click");
     await wrapper.get("[data-test='pick-song-1']").trigger("click");
-    await wrapper.findAll("button").find((button) => button.text().includes("Add Selected Songs"))!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text().includes("to setlist"))!.trigger("click");
     await nextTick();
-    await wrapper.findAll("button").find((button) => button.text() === "Create Setlist")!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text() === "Create setlist")!.trigger("click");
     await nextTick();
 
     expect(wrapper.text()).toContain("Please enter a title for your setlist");
 
     await wrapper.get("input[name='title']").setValue("Team Night");
-    await wrapper.findAll("button").find((button) => button.text() === "Create Setlist")!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text() === "Create setlist")!.trigger("click");
     await nextTick();
 
     expect(wrapper.text()).toContain("A setlist with that name already exists, please choose a different name");
@@ -172,10 +172,10 @@ describe("custom setlist editor", () => {
 
     const wrapper = await mountPage();
 
-    await wrapper.findAll("button").find((button) => button.text() === "Edit Setlist")!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text() === "Edit")!.trigger("click");
     await nextTick();
     await wrapper.get("input[name='title']").setValue("Sunday AM");
-    await wrapper.findAll("button").find((button) => button.text() === "Update Setlist")!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text() === "Update setlist")!.trigger("click");
     await nextTick();
 
     const savedSetlists = JSON.parse(localStorage.getItem("setlists") || "[]");
@@ -205,10 +205,10 @@ describe("custom setlist editor", () => {
 
     const wrapper = await mountPage();
 
-    await wrapper.findAll("button").find((button) => button.text() === "Edit Setlist")!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text() === "Edit")!.trigger("click");
     await nextTick();
     await wrapper.get("input[name='title']").setValue("Sunday AM");
-    await wrapper.findAll("button").find((button) => button.text() === "Update Setlist")!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text() === "Update setlist")!.trigger("click");
     await nextTick();
 
     expect(wrapper.text()).toContain("A setlist with that name already exists, please choose a different name");
@@ -227,14 +227,14 @@ describe("custom setlist editor", () => {
 
     const wrapper = await mountPage();
 
-    const deleteButton = wrapper.findAll("button").find((button) => button.text() === "Delete");
-    expect(deleteButton).toBeDefined();
-    await deleteButton!.trigger("click");
+    const deleteButton = wrapper.find("button[aria-label='Delete Team Night']");
+    expect(deleteButton.exists()).toBe(true);
+    await deleteButton.trigger("click");
     await nextTick();
 
-    expect(wrapper.text()).toContain("Yes, I'm sure");
+    expect(wrapper.text()).toContain("Delete \u201cTeam Night\u201d?");
 
-    await wrapper.findAll("button").find((button) => button.text() === "Yes, I'm sure")!.trigger("click");
+    await wrapper.findAll("button").find((button) => button.text() === "Delete")!.trigger("click");
     await nextTick();
 
     expect(JSON.parse(localStorage.getItem("setlists") || "[]")).toEqual([]);

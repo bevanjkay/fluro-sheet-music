@@ -21,6 +21,12 @@ const darkMode: Ref<boolean> = useStorage("darkMode", false);
 
 const keySelection: Ref<Record<string, string>> = useStorage("keys", {});
 
+const keyOptions = (song: PopulatedSong) =>
+  (song.sheetMusic || []).map(sheet => ({
+    _id: sheet._id,
+    label: sheet.data?.key || sheet.title,
+  }));
+
 const clearCache = () => {
   songStore.clearCache();
   songStore.getSongs();
@@ -53,31 +59,55 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <div class="flex flex-col gap-4">
-    <Typography size="heading-lg" variant="h3">Options</Typography>
-    <div class="flex flex-col gap-3">
-      <div v-for="song in songStore.state.populatedSongs" :key="song._id" class="flex flex-col gap-1">
-        <span><strong>{{ song.title }}</strong></span>
-        <Select
-v-model="keySelection[song._id]" :options="song.sheetMusic" option-label="title" option-value="_id"
-          :aria-label="`Key for ${song.title}`" placeholder="Select a Key" class="w-full " />
-      </div>
-    </div>
-      <div>
-        <span><strong>Scroll Direction</strong></span><br>
-        <SelectButton v-model="vertical" :options="verticalOptions" option-label="name" option-value="value" aria-label="Scroll Direction" />
-      </div>
-      <div>
-        <span><strong>Dark Mode</strong></span><br>
-        <SelectButton v-model="darkMode" :options="darkModeOptions" option-label="name" option-value="value" aria-label="Dark Mode" />
-      </div>
-      <div class="flex flex-col gap-2">
-        <span><strong>Storage</strong></span>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Current cache size: {{ storageSize }}</p>
-        <Button class="w-fit" label="Clear Cache" severity="secondary" @click="clearCache" />
-      </div>
-    </div>
+  <div class="flex flex-col gap-6">
+    <Typography size="heading-md" variant="h2">Options</Typography>
 
+    <section v-if="songStore.state.populatedSongs.length" class="flex flex-col gap-3">
+      <h3 class="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Keys</h3>
+      <div v-for="song in songStore.state.populatedSongs" :key="song._id" class="flex flex-col gap-1.5">
+        <span class="text-sm font-medium text-zinc-900 dark:text-zinc-50">{{ song.title }}</span>
+        <Select
+          v-model="keySelection[song._id]"
+          :options="keyOptions(song)"
+          option-label="label"
+          option-value="_id"
+          :aria-label="`Key for ${song.title}`"
+          placeholder="Select a key"
+          class="w-full"
+        />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h3 class="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Display</h3>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span class="text-sm font-medium text-zinc-900 dark:text-zinc-50">Scroll direction</span>
+        <SelectButton
+          v-model="vertical"
+          :options="verticalOptions"
+          option-label="name"
+          option-value="value"
+          aria-label="Scroll direction"
+        />
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span class="text-sm font-medium text-zinc-900 dark:text-zinc-50">Appearance</span>
+        <SelectButton
+          v-model="darkMode"
+          :options="darkModeOptions"
+          option-label="name"
+          option-value="value"
+          aria-label="Appearance"
+        />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-2 border-t border-zinc-200 pt-5 dark:border-zinc-800">
+      <h3 class="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Storage</h3>
+      <p class="text-sm text-zinc-600 dark:text-zinc-400">
+        Cached songs and sheets use {{ storageSize }}. Clearing reloads them from Fluro.
+      </p>
+      <Button class="w-fit" label="Clear cache" severity="secondary" @click="clearCache" />
+    </section>
   </div>
 </template>

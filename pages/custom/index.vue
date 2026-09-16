@@ -120,100 +120,147 @@ const clear = () => {
 
 <template>
   <Page>
-    <div class="flex flex-col gap-4 w-fit">
-      <Typography variant="h1" size="heading-lg">Custom Setlists</Typography>
-      <Message severity="warning">
-        <strong>Note:</strong> Setlists are only stored in your browser. They will be lost if you clear your cache.
-      </Message>
-      <Button v-if="!create" class="w-fit" label="+ Make New Setlist" @click="create = true" />
+    <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <Typography variant="h1" size="heading-lg">Custom setlists</Typography>
+        <p class="mt-2 max-w-xl text-sm text-zinc-500 dark:text-zinc-400">
+          Setlists are saved on this device only. Clearing your browser data removes them.
+        </p>
+      </div>
+      <Button v-if="!create" icon="plus" label="New setlist" class="w-fit shrink-0" @click="create = true" />
     </div>
-    <Panel v-if="create" header="Create custom setlist" class="mt-4 relative">
-      <Button style="position: absolute; top: 10px; right: 10px;" icon="times" rounded severity="danger" aria-label="Cancel setlist" @click="clear" />
-      <div class="mb-4">
+
+    <Panel v-if="create" :header="edit ? 'Edit setlist' : 'New setlist'" class="relative">
+      <Button
+        class="absolute right-3 top-3"
+        icon="times"
+        variant="text"
+        severity="secondary"
+        rounded
+        aria-label="Cancel and close editor"
+        @click="clear"
+      />
+
+      <div class="mb-5 max-w-sm">
         <FloatLabel variant="in">
           <InputText id="title" v-model="setlistForm.title" name="title" />
-          <label for="title">Setlist Name</label>
+          <label for="title">Setlist name</label>
         </FloatLabel>
       </div>
-      <div class="flex flex-col gap-2 w-fit">
-          <MultiSelect
-v-model="selectedSongs" class="start" :options="songStore.state.songs" option-label="title"
-            filter placeholder="Choose songs" />
-          <Button class="w-fit" @click="addSongs">
-            + Add Selected Songs to Setlist
-          </Button>
+
+      <div class="mb-5 flex flex-wrap items-center gap-2">
+        <MultiSelect
+          v-model="selectedSongs"
+          :options="songStore.state.songs"
+          option-label="title"
+          filter
+          placeholder="Choose songs"
+        />
+        <Button severity="secondary" :disabled="!selectedSongs.length" @click="addSongs">
+          Add {{ selectedSongs.length || "" }} to setlist
+        </Button>
       </div>
-      <table v-if="setlistForm.songs.length" class="mt-4 mb-4 w-full text-left text-sm">
-        <thead class="border-b border-zinc-200 text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-          <tr>
-            <th scope="col" class="py-2 pr-4 font-medium">Title</th>
-            <th scope="col" class="py-2 pr-4 font-medium">Select Key</th>
-            <th scope="col" class="py-2"><span class="sr-only">Actions</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="song in setlistForm.songs" :key="song._id" class="border-b border-zinc-100 dark:border-zinc-800">
-            <td class="py-2 pr-4">{{ song.title }}</td>
-            <td class="py-2 pr-4">
-              <Select v-model="selectedKeys[song._id]" :options="keys" placeholder="Key" />
-            </td>
-            <td class="py-2 text-right">
-              <Button severity="secondary" size="small" @click="removeSong(song._id)">
-                Remove
-              </Button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <Button
-v-if="setlistForm.songs.length" :label="edit ? 'Update Setlist' : 'Create Setlist'"
-        @click="createSetlist" />
-      <Message v-if="error" severity="error" icon="times-circle" style="margin-bottom: 1em;">
+
+      <div v-if="setlistForm.songs.length" class="mb-5 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+        <table class="w-full text-left text-sm">
+          <thead class="border-b border-zinc-200 bg-zinc-50 text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
+            <tr>
+              <th scope="col" class="px-4 py-2.5 font-medium">Song</th>
+              <th scope="col" class="px-4 py-2.5 font-medium">Key</th>
+              <th scope="col" class="px-4 py-2.5"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <tr v-for="song in setlistForm.songs" :key="song._id">
+              <td class="px-4 py-2.5 font-medium text-zinc-900 dark:text-zinc-50">{{ song.title }}</td>
+              <td class="px-4 py-2.5">
+                <Select
+                  v-model="selectedKeys[song._id]"
+                  :options="keys"
+                  :placeholder="song.key || 'Key'"
+                  :aria-label="`Key for ${song.title}`"
+                  class="w-28"
+                />
+              </td>
+              <td class="px-4 py-2.5 text-right">
+                <Button
+                  severity="secondary"
+                  size="small"
+                  icon="trash"
+                  :aria-label="`Remove ${song.title}`"
+                  @click="removeSong(song._id)"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p v-else class="mb-5 rounded-lg border border-dashed border-zinc-300 px-4 py-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+        No songs yet. Choose songs above to build your running order.
+      </p>
+
+      <Message v-if="error" severity="error" icon="times-circle" class="mb-4">
         {{ error }}
       </Message>
+
+      <div class="flex gap-2">
+        <Button
+          :disabled="!setlistForm.songs.length"
+          :label="edit ? 'Update setlist' : 'Create setlist'"
+          @click="createSetlist"
+        />
+        <Button label="Cancel" severity="secondary" @click="clear" />
+      </div>
     </Panel>
+
     <template v-if="!create">
-      <div class="flex flex-col gap-4 mt-6">
-        <Card v-for="setlist in setlists" :key="setlist._id" class="card">
+      <div v-if="setlists.length" class="grid items-start gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <Card v-for="setlist in setlists" :key="setlist._id">
           <template #title>
-            <h3 style="margin:0;">
-              {{ setlist.title }}
-            </h3>
+            {{ setlist.title }}
+          </template>
+          <template #subtitle>
+            {{ setlist.songs.length }} {{ setlist.songs.length === 1 ? "song" : "songs" }} &middot; created {{ formatDate(setlist.created) }}
           </template>
           <template #content>
-            <strong>Date created:</strong> {{ formatDate(setlist.created) }}
-            <p v-if="setlist.songs.length">
-              <span v-for="item in setlist.songs" :key="item._id" style="display: block;">{{ item.title }}</span>
-            </p>
+            <ul v-if="setlist.songs.length" class="space-y-1 text-sm">
+              <li v-for="item in setlist.songs" :key="item._id" class="flex items-baseline justify-between gap-3">
+                <span class="min-w-0 truncate text-zinc-700 dark:text-zinc-300">{{ item.title }}</span>
+                <span v-if="item.key" class="shrink-0 text-xs font-semibold text-zinc-500 dark:text-zinc-400">{{ item.key }}</span>
+              </li>
+            </ul>
+            <p v-else class="text-sm text-zinc-500 dark:text-zinc-400">No songs in this setlist.</p>
           </template>
           <template #footer>
-            <div class="flex place-content-between">
-              <div class="flex gap-2">
-                <template v-if="!isDeleting(setlist._id)">
-                  <Button label="View Setlist" class="w-fit" @click="navigateTo(`/custom/${setlist._id}`)" />
-                  <Button label="Edit Setlist" class="w-fit" @click="editSetlist(setlist)" />
-                </template>
-              </div>
-              <div class="flex-end">
-                <Button
-v-if="!isDeleting(setlist._id)" severity="danger" outlined
-                  @click="deleting[setlist._id] = true">
-                  Delete
-                </Button>
-                <Button
-v-if="isDeleting(setlist._id)" style="margin-right: 1em;" severity="danger"
-                  @click="deleteSetlist(setlist)">
-                  Yes, I'm sure
-                </Button>
-                <Button
-v-if="isDeleting(setlist._id)" severity="secondary"
-                  @click="deleting[setlist._id] = false">
-                  No, don't delete this
-                </Button>
-              </div>
+            <div v-if="!isDeleting(setlist._id)" class="flex flex-wrap items-center gap-2">
+              <Button label="Open" @click="navigateTo(`/custom/${setlist._id}`)" />
+              <Button label="Edit" severity="secondary" icon="pencil" @click="editSetlist(setlist)" />
+              <Button
+                class="ml-auto"
+                variant="text"
+                severity="secondary"
+                icon="trash"
+                :aria-label="`Delete ${setlist.title}`"
+                @click="deleting[setlist._id] = true"
+              />
+            </div>
+            <div v-else class="flex flex-wrap items-center gap-2">
+              <p class="w-full text-sm text-zinc-600 dark:text-zinc-400">Delete &ldquo;{{ setlist.title }}&rdquo;?</p>
+              <Button label="Delete" severity="danger" @click="deleteSetlist(setlist)" />
+              <Button label="Keep" severity="secondary" @click="deleting[setlist._id] = false" />
             </div>
           </template>
         </Card>
+      </div>
+
+      <div v-else class="rounded-xl border border-dashed border-zinc-300 px-5 py-12 text-center dark:border-zinc-700">
+        <Typography variant="h2" size="heading-sm">No setlists yet</Typography>
+        <p class="mx-auto mt-2 max-w-md text-sm text-zinc-500 dark:text-zinc-400">
+          Build your own running order for rehearsals, team nights, and anything without a Fluro plan.
+        </p>
+        <div class="mt-5 flex justify-center">
+          <Button icon="plus" label="New setlist" @click="create = true" />
+        </div>
       </div>
     </template>
   </Page>

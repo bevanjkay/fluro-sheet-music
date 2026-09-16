@@ -55,37 +55,56 @@ const useLogin = async (): Promise<void> => {
 </script>
 
 <template>
-  <page class="pt-12">
-    <Typography variant="h1" size="heading-lg">Welcome to Fluro Sheet Music Viewer</Typography>
-    <Card class="w-fit p-4 mt-6">
-      <template #title>
-        <typography variant="h2" size="heading-md">
-          Please login to continue
-        </typography>
-        <typography variant="p" size="text"><small>Login using your Fluro account details.</small></typography>
-      </template>
-      <template #content>
-        <form class="flex flex-col gap-4" @submit.prevent="useLogin">
-          <FloatLabel variant="in">
-            <InputText id="username" v-model="username" :disabled="pending" size="large" name="username" type="text" />
-            <label for="username">Username</label>
-          </FloatLabel>
-          <FloatLabel variant="in">
-            <Password id="password" v-model="password" :disabled="pending" size="large" name="password" />
-            <label for="password">Password</label>
-          </FloatLabel>
-          <Message v-if="error" severity="error" icon="times-circle" class="mb-2">
-            {{ error }}
-          </Message>
-          <div class="start">
+  <page>
+    <div class="mx-auto w-full max-w-md">
+      <Typography variant="h1" size="heading-lg">Fluro Sheet Music</Typography>
+      <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+        Sign in with your Fluro account to load your services and songs.
+      </p>
+
+      <Card class="mt-6">
+        <template #content>
+          <form class="flex flex-col gap-4" @submit.prevent="useLogin">
+            <FloatLabel variant="in">
+              <InputText
+                id="username"
+                v-model="username"
+                :disabled="pending"
+                size="large"
+                name="username"
+                type="text"
+                autocomplete="username"
+              />
+              <label for="username">Username</label>
+            </FloatLabel>
+            <FloatLabel variant="in">
+              <Password
+                id="password"
+                v-model="password"
+                :disabled="pending"
+                size="large"
+                name="password"
+                autocomplete="current-password"
+              />
+              <label for="password">Password</label>
+            </FloatLabel>
+            <Message v-if="error" severity="error" icon="times-circle">
+              {{ error }}
+            </Message>
             <Button
-              :disabled="pending" size="large" type="submit" :label="pending ? 'Attempting login...' : 'Login'" />
-          </div>
-        </form>
-      </template>
-    </Card>
+              :disabled="pending"
+              size="large"
+              type="submit"
+              class="w-full"
+              :label="pending ? 'Signing in...' : 'Sign in'"
+            />
+          </form>
+        </template>
+      </Card>
+    </div>
+
     <AbsoluteFooter>
       Made with ❤️ by <a href="https://bevankay.me" target="_blank">Bevan Kay</a>
     </AbsoluteFooter>
-</page>
+  </page>
 </template>

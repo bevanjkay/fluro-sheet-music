@@ -73,7 +73,7 @@ describe("PdfWrapper", () => {
     const wrapper = await mountSuspended(PdfWrapper, {
       global: {
         stubs: {
-          Button: { template: "<button><slot /></button>" },
+          Button: { props: ["label"], template: "<button>{{ label }}<slot /></button>" },
         },
       },
     });
@@ -94,12 +94,12 @@ describe("PdfWrapper", () => {
     const wrapper = await mountSuspended(PdfWrapper, {
       global: {
         stubs: {
-          Button: { template: "<button><slot /></button>" },
+          Button: { props: ["label"], template: "<button>{{ label }}<slot /></button>" },
         },
       },
     });
 
-    expect(wrapper.text()).toContain("No songs in this plan.");
-    expect(wrapper.text()).toContain("View list of service plans");
+    expect(wrapper.text()).toContain("No songs in this plan");
+    expect(wrapper.text()).toContain("Service plans");
   });
 });

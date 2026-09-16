@@ -150,9 +150,12 @@ onBeforeUnmount(() => {
           v-for="slide in allSlides"
           :key="slide.song._id + slide.page + (slide.song.selectedSheet?._id || '')"
         >
-          <div v-if="!slide.song.sheetMusic?.length" class="p-12 relative min-h-screen pt-24" style="min-height: 85vh"> 
-            <h1>{{ slide.song.title }}</h1>
-            <h3 style="color: darkred">No sheet music for this song.</h3>
+          <div
+            v-if="!slide.song.sheetMusic?.length"
+            class="relative flex min-h-screen flex-col items-center justify-center px-4 pb-20 pt-24 text-center"
+          >
+            <Typography variant="h2" size="heading-md">{{ slide.song.title }}</Typography>
+            <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">No sheet music has been attached to this song.</p>
           </div>
           <PdfRender
             v-if="slide.song.selectedSheet && slide.song.sheetMusic?.length"
@@ -164,12 +167,14 @@ onBeforeUnmount(() => {
           />
         </swiper-slide>
       </swiper-container>
-      <div v-else class="p-12 relative min-h-screen pt-24">
-        <h2>No songs in this plan.</h2>
-        <div class="grid row gap-1 start" style="max-width: 400px;">
-          <Button @click="navigateTo('/plans')">View list of service plans</Button>
-          <Button @click="navigateTo('/songs')">View list of songs</Button>
-          <Button @click="navigateTo('/')">Go Home</Button>
+      <div v-else class="relative flex min-h-screen flex-col items-center justify-center px-4 pb-20 pt-24 text-center">
+        <Typography variant="h2" size="heading-md">No songs in this plan</Typography>
+        <p class="mt-2 max-w-md text-sm text-zinc-500 dark:text-zinc-400">
+          Nothing has been scheduled here yet. Pick another service, or open a song directly from the library.
+        </p>
+        <div class="mt-6 flex flex-wrap justify-center gap-2">
+          <Button label="Service plans" @click="navigateTo('/plans')" />
+          <Button label="Songs" severity="secondary" @click="navigateTo('/songs')" />
         </div>
       </div>
     </div>
@@ -179,11 +184,11 @@ onBeforeUnmount(() => {
 <style scoped>
 .pdf-surface {
   min-height: 100vh;
-  background: #f4f4f4;
+  background: #f4f4f5;
 }
 
 .pdf-surface-dark {
-  background: #1f1f1f;
+  background: #18181b;
 }
 
 .pdf-surface :deep(swiper-container),

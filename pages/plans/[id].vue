@@ -32,8 +32,10 @@ useSeoMeta({
 <template>
   <div>
     <page v-if="status !== 'success'">
-      <Typography variant="h3" size="heading-md">Loading plan...</Typography>
-      <ProgressSpinner />
+      <div class="flex flex-col items-center gap-4 py-20">
+        <ProgressSpinner />
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">Loading plan...</p>
+      </div>
     </page>
     <PdfWrapper />
   </div>

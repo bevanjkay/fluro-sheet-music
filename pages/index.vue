@@ -12,7 +12,7 @@
         </template>
         <template #footer>
           <div class="flex gap-4 mt-1">
-            <Button as="router-link" label="Go" severity="secondary" outlined class="w-fit" to="/plans" />
+            <Button label="Go" severity="secondary" outlined class="w-fit" to="/plans" />
           </div>
         </template>
       </Card>
@@ -23,7 +23,7 @@
         </template>
         <template #footer>
           <div class="flex gap-4 mt-1">
-            <Button as="router-link" label="Go" severity="secondary" outlined class="w-fit" to="/songs" />
+            <Button label="Go" severity="secondary" outlined class="w-fit" to="/songs" />
           </div>
         </template>
       </Card>
@@ -34,7 +34,7 @@
         </template>
         <template #footer>
           <div class="flex gap-4 mt-1">
-            <Button as="router-link" label="Go" severity="secondary" outlined class="w-fit" to="/custom" />
+            <Button label="Go" severity="secondary" outlined class="w-fit" to="/custom" />
           </div>
         </template>
       </Card>

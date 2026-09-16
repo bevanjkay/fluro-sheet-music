@@ -47,28 +47,28 @@ onMounted(async () => {
 const menuItems = ref([
   {
     label: "Home",
-    icon: "pi pi-fw pi-home",
+    icon: "home",
     command: () => {
       navigateTo("/");
     },
   },
   {
     label: "Service Plans",
-    icon: "pi pi-fw pi-calendar",
+    icon: "calendar",
     command: () => {
       navigateTo("/plans");
     },
   },
   {
     label: "Songs",
-    icon: "pi pi-fw pi-list",
+    icon: "list",
     command: () => {
       navigateTo("/songs");
     },
   },
   {
     label: "Custom Setlists",
-    icon: "pi pi-fw pi-th-large",
+    icon: "grid",
     command: () => {
       navigateTo("/custom");
     },
@@ -83,7 +83,8 @@ const logout = () => {
   confirm.require({
     header: "Logout",
     message: "Are you sure you want to logout?",
-    icon: "pi pi-exclamation-triangle",
+    icon: "exclamation-triangle",
+    acceptLabel: "Logout",
     accept: () => {
       resetBootstrap();
       user.value = {
@@ -121,8 +122,8 @@ const showBootstrapState = computed(() => Boolean(user.value.token) && bootstrap
       <Menubar v-if="user?.token" class="w-full" :model="menuItems">
         <template #end>
           <div class="flex flex-row gap-4">
-            <Button icon="pi pi-cog" variant="text" label="Settings" severity="secondary" @click="settings" />
-            <Button label="Logout" icon="pi pi-sign-out" @click="logout" />
+            <Button icon="settings" variant="text" label="Settings" severity="secondary" @click="settings" />
+            <Button label="Logout" icon="sign-out" @click="logout" />
           </div>
         </template>
       </Menubar>

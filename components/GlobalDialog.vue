@@ -58,22 +58,22 @@ onMounted(() => {
     <Typography size="heading-lg" variant="h3">Options</Typography>
     <div class="flex flex-col gap-3">
       <div v-for="song in songStore.state.populatedSongs" :key="song._id" class="flex flex-col gap-1">
-        <label :for="song._id"><strong>{{ song.title }}</strong></label>
+        <span><strong>{{ song.title }}</strong></span>
         <Select
 v-model="keySelection[song._id]" :options="song.sheetMusic" option-label="title" option-value="_id"
-          placeholder="Select a Key" class="w-full " />
+          :aria-label="`Key for ${song.title}`" placeholder="Select a Key" class="w-full " />
       </div>
     </div>
       <div>
-        <label><strong>Scroll Direction</strong></label><br>
-        <SelectButton v-model="vertical" :options="verticalOptions" option-label="name" option-value="value" />
+        <span><strong>Scroll Direction</strong></span><br>
+        <SelectButton v-model="vertical" :options="verticalOptions" option-label="name" option-value="value" aria-label="Scroll Direction" />
       </div>
       <div>
-        <label><strong>Dark Mode</strong></label><br>
-        <SelectButton v-model="darkMode" :options="darkModeOptions" option-label="name" option-value="value" />
+        <span><strong>Dark Mode</strong></span><br>
+        <SelectButton v-model="darkMode" :options="darkModeOptions" option-label="name" option-value="value" aria-label="Dark Mode" />
       </div>
       <div class="flex flex-col gap-2">
-        <label><strong>Storage</strong></label>
+        <span><strong>Storage</strong></span>
         <p class="text-sm text-gray-600 dark:text-gray-400">Current cache size: {{ storageSize }}</p>
         <Button class="w-fit" label="Clear Cache" severity="secondary" @click="clearCache" />
       </div>
@@ -81,9 +81,3 @@ v-model="keySelection[song._id]" :options="song.sheetMusic" option-label="title"
 
   </div>
 </template>
-
-<style>
-.p-dialog {
-  width: clamp(200px, 95vw, 600px);
-}
-</style>

@@ -20,10 +20,18 @@ const setlistForm: Ref<CustomSetlist> = ref({
   _id: "",
 });
 
-const selectedSongs: Ref<PlanSong[]> = ref([]);
+const selectedSongs: Ref<Song[]> = ref([]);
 
+// The picker yields Song records; setlists store PlanSong, the same shape a
+// service plan schedule produces, so sheet-by-key matching works either way.
 const addSongs = () => {
-  setlistForm.value.songs = [...setlistForm.value.songs, ...selectedSongs.value];
+  const additions: PlanSong[] = selectedSongs.value.map(song => ({
+    _id: song._id,
+    title: song.title,
+    key: song.data?.key ?? "",
+    type: "song",
+  }));
+  setlistForm.value.songs = [...setlistForm.value.songs, ...additions];
   selectedSongs.value = [];
 };
 
@@ -120,10 +128,10 @@ const clear = () => {
       <Button v-if="!create" class="w-fit" label="+ Make New Setlist" @click="create = true" />
     </div>
     <Panel v-if="create" header="Create custom setlist" class="mt-4 relative">
-      <Button style="position: absolute; top: 10px; right: 10px;" icon="pi pi-times" rounded severity="danger" aria-label="Bookmark" @click="clear" />
+      <Button style="position: absolute; top: 10px; right: 10px;" icon="times" rounded severity="danger" aria-label="Cancel setlist" @click="clear" />
       <div class="mb-4">
         <FloatLabel variant="in">
-          <InputText v-model="setlistForm.title" name="title" label="title" />
+          <InputText id="title" v-model="setlistForm.title" name="title" />
           <label for="title">Setlist Name</label>
         </FloatLabel>
       </div>
@@ -135,28 +143,32 @@ v-model="selectedSongs" class="start" :options="songStore.state.songs" option-la
             + Add Selected Songs to Setlist
           </Button>
       </div>
-      <DataTable
-v-if="setlistForm.songs.length" style="margin-bottom:1em;" :value="setlistForm.songs"
-        table-style="min-width: 50rem" class="mt-4">
-        <Column row-reorder header-style="width: 3rem" :reorderable-column="false" />
-        <Column field="title" header="Title" />
-        <Column field="key" header="Select Key">
-          <template #body="slotProps">
-            <Dropdown v-model="selectedKeys[slotProps.data._id]" :options="keys" />
-          </template>
-        </Column>
-        <Column>
-          <template #body="slotProps">
-            <Button @click="removeSong(slotProps.data._id)">
-              Remove
-            </Button>
-          </template>
-        </Column>
-      </DataTable>
+      <table v-if="setlistForm.songs.length" class="mt-4 mb-4 w-full text-left text-sm">
+        <thead class="border-b border-zinc-200 text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+          <tr>
+            <th scope="col" class="py-2 pr-4 font-medium">Title</th>
+            <th scope="col" class="py-2 pr-4 font-medium">Select Key</th>
+            <th scope="col" class="py-2"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="song in setlistForm.songs" :key="song._id" class="border-b border-zinc-100 dark:border-zinc-800">
+            <td class="py-2 pr-4">{{ song.title }}</td>
+            <td class="py-2 pr-4">
+              <Select v-model="selectedKeys[song._id]" :options="keys" placeholder="Key" />
+            </td>
+            <td class="py-2 text-right">
+              <Button severity="secondary" size="small" @click="removeSong(song._id)">
+                Remove
+              </Button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <Button
 v-if="setlistForm.songs.length" :label="edit ? 'Update Setlist' : 'Create Setlist'"
         @click="createSetlist" />
-      <Message v-if="error" severity="error" icon="pi pi-times-circle" style="margin-bottom: 1em;">
+      <Message v-if="error" severity="error" icon="times-circle" style="margin-bottom: 1em;">
         {{ error }}
       </Message>
     </Panel>
@@ -184,17 +196,17 @@ v-if="setlistForm.songs.length" :label="edit ? 'Update Setlist' : 'Create Setlis
               </div>
               <div class="flex-end">
                 <Button
-v-if="!isDeleting(setlist._id)" severity="secondary" class="p-button-danger"
+v-if="!isDeleting(setlist._id)" severity="danger" outlined
                   @click="deleting[setlist._id] = true">
                   Delete
                 </Button>
                 <Button
-v-if="isDeleting(setlist._id)" style="margin-right: 1em;" class="p-button-danger"
+v-if="isDeleting(setlist._id)" style="margin-right: 1em;" severity="danger"
                   @click="deleteSetlist(setlist)">
                   Yes, I'm sure
                 </Button>
                 <Button
-v-if="isDeleting(setlist._id)" severity="secondary" class="p-button-grey"
+v-if="isDeleting(setlist._id)" severity="secondary"
                   @click="deleting[setlist._id] = false">
                   No, don't delete this
                 </Button>

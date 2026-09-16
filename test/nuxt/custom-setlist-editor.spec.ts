@@ -68,14 +68,6 @@ const MultiSelectStub = {
   `,
 };
 
-const DataTableStub = {
-  template: "<div data-test='data-table'><slot /></div>",
-};
-
-const ColumnStub = {
-  template: "<div><slot /></div>",
-};
-
 describe("custom setlist editor", () => {
   beforeEach(() => {
     localStorage.setItem("_fluro_user", JSON.stringify({ token: "test-token", refreshToken: "" }));
@@ -105,9 +97,7 @@ describe("custom setlist editor", () => {
         FloatLabel: FloatLabelStub,
         InputText: InputTextStub,
         MultiSelect: MultiSelectStub,
-        DataTable: DataTableStub,
-        Column: ColumnStub,
-        Dropdown: { template: "<select />" },
+        Select: { template: "<select />" },
         Card: CardStub,
       },
     },
@@ -135,7 +125,8 @@ describe("custom setlist editor", () => {
       expect.objectContaining({
         _id: "song-1",
         title: "Amazing Grace",
-        data: expect.objectContaining({ key: "C" }),
+        key: "C",
+        type: "song",
       }),
     ]);
   });

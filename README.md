@@ -42,3 +42,7 @@ Pushes to `main` are built with the `github_pages` preset and deployed to GitHub
 - The app is fully client-rendered (`ssr: false`) and talks directly to the Fluro API (`api.fluro.io`).
 - `pdfjs-dist` is pinned to v3.x and builds target Safari/iOS 14 (via `@vitejs/plugin-legacy`) to support older iPads.
 - The `/ipad-sim` route is a dev-only page for testing PDF rendering; it is stripped from production builds.
+
+## License
+
+Licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). You may use, modify and share this project for noncommercial purposes, including use by churches and other charitable organisations. Commercial use is not permitted.
